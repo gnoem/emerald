@@ -4,12 +4,13 @@ import Avatar from "../Avatar";
 import styles from "./user.module.css";
 
 const User = ({ socketId, position, orientation: givenOrientation, isPlayer }) => {
-  const [orientation, setOrientation] = useState(givenOrientation ?? 'S');
+  const [orientation, setOrientation] = useState(null);
+  const [isMoving, setIsMoving] = useState(false);
   const [transitionDuration, setTransitionDuration] = useState('999');
   const userRef = useRef(null);
   const prevPosition = usePrevious(position);
   useEffect(() => {
-    setOrientation(givenOrientation);
+    setOrientation(givenOrientation ?? 'S');
   }, [givenOrientation]);
   useEffect(() => {
     if (!prevPosition || !position) return;
@@ -24,11 +25,15 @@ const User = ({ socketId, position, orientation: givenOrientation, isPlayer }) =
       return duration;
     }
     setTransitionDuration(getDuration());
+    setIsMoving(true);
+    setTimeout(() => {
+      setIsMoving(false);
+    }, getDuration() * 1000);
   }, [position, prevPosition]);
   useEffect(() => {
     if (!userRef.current) return;
     const checkOrientation = (e) => {
-      if (!isPlayer) return;
+      if (!isPlayer || isMoving) return;
       const { clientX, clientY } = e;
       const { top, left, width, height } = userRef.current.getBoundingClientRect();
       const x = left + (width / 2);
@@ -39,14 +44,15 @@ const User = ({ socketId, position, orientation: givenOrientation, isPlayer }) =
     }
     window.addEventListener('mousemove', checkOrientation);
     return () => window.removeEventListener('mousemove', checkOrientation);
-  }, [userRef.current]);
+  }, [isMoving, userRef.current]);
   return (
     <div
       className={styles.User}
       data-self={isPlayer}
       style={{
         transform: `translate3d(${position.x - 24}px, ${position.y - 24}px, 0)`,
-        transitionDuration: `${transitionDuration}s`
+        transitionDuration: `${transitionDuration}s`,
+        zIndex: `${position.y}`
       }}
       ref={userRef}>
         <span className={styles.userAvatar}><Avatar {...{ orientation, socketId }} /></span>
