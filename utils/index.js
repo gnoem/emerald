@@ -10,3 +10,7 @@ export const getAngle = (cx, cy, ex, ey) => {
   if (theta < 0) theta = 360 + theta; // range [0, 360)
   return theta;
 }
+
+export const randomFromArray = (array) => {
+  return array[Math.floor(Math.random() * array.length)];
+}

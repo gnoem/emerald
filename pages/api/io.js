@@ -1,5 +1,6 @@
 import { Server } from "socket.io";
-import { randomIntBetween } from "../../utils";
+import { colorMap } from "../../components/Avatar";
+import { randomFromArray, randomIntBetween } from "../../utils";
 
 const users = {};
 
@@ -12,6 +13,9 @@ const ioHandler = (_, res) => {
         position: {
           x: randomIntBetween(150, 550),
           y: randomIntBetween(150, 350)
+        },
+        outfit: {
+          color: randomFromArray(Object.keys(colorMap))
         }
       };
       socket.broadcast.emit('a user connected', users);
@@ -26,6 +30,7 @@ const ioHandler = (_, res) => {
       });
       socket.on('a user moved', ({ socketId, position, orientation }) => {
         const data = {
+          ...users[socket.id],
           position,
           orientation
         }
