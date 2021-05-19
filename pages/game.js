@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import Scene from "../components/Scene";
 import User from "../components/User";
@@ -7,6 +7,7 @@ const Game = () => {
   const [socket, setSocket] = useState(null);
   const [playerId, setPlayerId] = useState(null);
   const [userList, setUserList] = useState({});
+  const userInstances = useRef({});
   useEffect(() => {
     if (playerId) return;
     fetch('/api/io').finally(() => {
@@ -38,10 +39,16 @@ const Game = () => {
   const users = Object.keys(userList).map(socketId => {
     const { position, orientation, outfit } = userList[socketId];
     const isPlayer = socketId === playerId;
-    return <User key={socketId} {...{ socketId, outfit, position, orientation, isPlayer }} />;
+    return (
+      <User
+        key={socketId}
+        ref={(el) => userInstances.current[socketId] = el}
+        {...{ socketId, userInstances, outfit, position, orientation, isPlayer }}
+      />
+    );
   });
   return (
-    <Scene {...{ socket, userList, playerId }}>
+    <Scene {...{ socket, userList, userInstances, playerId }}>
       {users}
     </Scene>
   );

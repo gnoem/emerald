@@ -3,7 +3,7 @@ import { useOrientation } from "../../hooks";
 
 import styles from "./scene.module.css";
 
-const Scene = ({ children, socket, userList, playerId }) => {
+const Scene = ({ children, socket, userList, userInstances, playerId }) => {
   const sceneRef = useRef(null);
   useEffect(() => {
     if (!sceneRef.current || !playerId || !socket) return;
@@ -14,7 +14,8 @@ const Scene = ({ children, socket, userList, playerId }) => {
         x: clientX - y,
         y: clientY - x
       }
-      const { position: prevPosition } = userList[playerId];
+      // need to base prev coords on user element's coords AT TIME OF CLICK
+      const prevPosition = userInstances.current[playerId].getBoundingClientRect();
       const orientation = useOrientation(prevPosition.x, prevPosition.y, position.x, position.y);
       socket.emit('a user moved', {
         socketId: playerId,

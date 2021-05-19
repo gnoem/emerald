@@ -1,15 +1,13 @@
-import { useEffect, useRef, useState } from "react";
-import { useOrientation, usePrevious } from "../../hooks";
+import React, { useEffect, useState } from "react";
+import { useOrientation } from "../../hooks";
 import Avatar from "../Avatar";
 import styles from "./user.module.css";
 
-const User = ({ socketId, position, orientation: givenOrientation, outfit, isPlayer }) => {
+const User = React.forwardRef(({ socketId, userInstances, position, orientation: givenOrientation, outfit, isPlayer }, ref) => {
   const [orientation, setOrientation] = useState(null);
   const [isMoving, setIsMoving] = useState(false);
   const [transitionDuration, setTransitionDuration] = useState(null);
   const [transitionTimeout, setTransitionTimeout] = useState(null);
-  const userRef = useRef(null);
-  const prevPosition = usePrevious(position);
   useEffect(() => {
     setOrientation(givenOrientation ?? 'S');
   }, [givenOrientation]);
@@ -22,8 +20,9 @@ const User = ({ socketId, position, orientation: givenOrientation, outfit, isPla
     }, transitionDuration * 1000));
   }, [transitionDuration]);
   useEffect(() => {
-    if (!prevPosition || !position) return;
-    const { x: prevX, y: prevY } = prevPosition;
+    if (!position) return;
+    // prevPosition must be based on coords AT TIME OF CLICK
+    const { x: prevX, y: prevY } = userInstances.current[socketId].getBoundingClientRect();
     const { x, y } = position;
     if ((prevX === x) && (prevY === y)) return;
     const getDuration = () => {
@@ -34,13 +33,14 @@ const User = ({ socketId, position, orientation: givenOrientation, outfit, isPla
       return duration;
     }
     setTransitionDuration(getDuration());
-  }, [position, prevPosition]);
+  }, [position]);
   useEffect(() => {
-    if (!userRef.current) return;
+    const element = userInstances.current[socketId];
+    if (!element) return;
     const checkOrientation = (e) => {
       if (!isPlayer || isMoving) return;
       const { clientX, clientY } = e;
-      const { top, left, width, height } = userRef.current.getBoundingClientRect();
+      const { top, left, width, height } = element.getBoundingClientRect();
       const x = left + (width / 2);
       const y = top + (height / 2);
       const [dx, dy] = [Math.abs(clientX - x), Math.abs(clientY - y)];
@@ -49,7 +49,7 @@ const User = ({ socketId, position, orientation: givenOrientation, outfit, isPla
     }
     window.addEventListener('mousemove', checkOrientation);
     return () => window.removeEventListener('mousemove', checkOrientation);
-  }, [isMoving, userRef.current]);
+  }, [isMoving, userInstances.current]);
   return (
     <div
       className={styles.User}
@@ -59,11 +59,11 @@ const User = ({ socketId, position, orientation: givenOrientation, outfit, isPla
         transitionDuration: `${transitionDuration}s`,
         zIndex: `${position.y}`
       }}
-      ref={userRef}>
+      ref={ref}>
         <span className={styles.userAvatar}><Avatar {...{ orientation, outfit, socketId, isMoving }} /></span>
         <span className={styles.userLabel}>{socketId.slice(0, 5)}</span>
     </div>
   );
-}
+});
 
 export default User;
