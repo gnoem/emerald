@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useOrientation } from "../../hooks";
 import Avatar from "../Avatar";
 import styles from "./user.module.css";
@@ -8,6 +8,7 @@ const User = React.forwardRef(({ socketId, userInstances, position, orientation:
   const [isMoving, setIsMoving] = useState(false);
   const [transitionDuration, setTransitionDuration] = useState(null);
   const [transitionTimeout, setTransitionTimeout] = useState(null);
+  const animationRef = useRef(null);
   useEffect(() => {
     setOrientation(givenOrientation ?? 'S');
   }, [givenOrientation]);
@@ -17,12 +18,14 @@ const User = React.forwardRef(({ socketId, userInstances, position, orientation:
     setIsMoving(true);
     setTransitionTimeout(setTimeout(() => {
       setIsMoving(false);
+      setTransitionDuration(null);
     }, transitionDuration * 1000));
   }, [transitionDuration]);
   useEffect(() => {
     if (!position) return;
+    const element = userInstances.current[socketId];
     // prevPosition must be based on coords AT TIME OF CLICK
-    const { x: prevX, y: prevY } = userInstances.current[socketId].getBoundingClientRect();
+    const { x: prevX, y: prevY } = element.getBoundingClientRect();
     const { x, y } = position;
     if ((prevX === x) && (prevY === y)) return;
     const getDuration = () => {
@@ -32,7 +35,16 @@ const User = React.forwardRef(({ socketId, userInstances, position, orientation:
       const duration = distance / speed;
       return duration;
     }
+    // first need to determine transition duration, THEN start moving
     setTransitionDuration(getDuration());
+    const getAnimation = (time) => {
+      element.style.transform = `translate3d(${position.x - 24}px, ${position.y - 24}px, 0)`;
+      if (time > getDuration() * 1000) {
+        requestAnimationFrame(getAnimation);
+      }
+    }
+    animationRef.current = requestAnimationFrame(getAnimation);
+    return () => cancelAnimationFrame(animationRef.current);
   }, [position]);
   useEffect(() => {
     const element = userInstances.current[socketId];
@@ -55,7 +67,6 @@ const User = React.forwardRef(({ socketId, userInstances, position, orientation:
       className={styles.User}
       data-self={isPlayer}
       style={{
-        transform: `translate3d(${position.x - 24}px, ${position.y - 24}px, 0)`,
         transitionDuration: `${transitionDuration}s`,
         zIndex: `${position.y}`
       }}

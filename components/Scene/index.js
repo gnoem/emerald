@@ -17,6 +17,7 @@ const Scene = ({ children, socket, userList, userInstances, playerId }) => {
       // need to base prev coords on user element's coords AT TIME OF CLICK
       const prevPosition = userInstances.current[playerId].getBoundingClientRect();
       const orientation = useOrientation(prevPosition.x, prevPosition.y, position.x, position.y);
+      // need to wait for transition duration to be set, THEN user can start moving
       socket.emit('a user moved', {
         socketId: playerId,
         position,
