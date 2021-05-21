@@ -2,9 +2,10 @@
   position: relative;
   width: 700px;
   height: 500px;
-  overflow: hidden;
+  overflow: visible;
   background: #c6ffe2 no-repeat;
   background-position: 50% 50%;
   background-size: cover;
   padding: 3rem;
+  border-radius: 2rem;
 }
