@@ -1,5 +1,6 @@
 * {
   box-sizing: border-box;
+  outline: none;
 }
 :root {
   --default-font: 'Inconsolata', sans-serif;
@@ -32,6 +33,7 @@ input {
   border: 0;
   background: #f7f7f7;
   line-height: 2;
+  padding: 0 0.5rem;
 }
 button {
   border: 0;

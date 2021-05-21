@@ -8,6 +8,7 @@ const Game = () => {
   const [playerId, setPlayerId] = useState(null);
   const [userList, setUserList] = useState({});
   const userInstances = useRef({});
+  const sceneRef = useRef(null);
   useEffect(() => {
     if (playerId) return;
     fetch('/api/io').finally(() => {
@@ -43,12 +44,12 @@ const Game = () => {
       <User
         key={socketId}
         ref={(el) => userInstances.current[socketId] = el}
-        {...{ socketId, userInstances, outfit, position, orientation, isPlayer }}
+        {...{ socketId, scene: sceneRef.current, userInstances, outfit, position, orientation, isPlayer }}
       />
     );
   });
   return (
-    <Scene {...{ socket, userList, userInstances, playerId }}>
+    <Scene ref={sceneRef} {...{ socket, userList, userInstances, playerId }}>
       {users}
     </Scene>
   );
