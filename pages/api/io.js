@@ -55,13 +55,14 @@ const ioHandler = (_, res) => {
           [socketId]: data
         });
         setTimeout(() => {
-          delete data.message;
-          users[socketId] = data;
+          const upToDateData = {...users[socketId]};
+          delete upToDateData.message;
+          users[socketId] = upToDateData;
           socket.emit('a user talked', {
-            [socketId]: data
+            [socketId]: upToDateData
           });
           socket.broadcast.emit('a user talked', {
-            [socketId]: data
+            [socketId]: upToDateData
           });
         }, 5000);
       });

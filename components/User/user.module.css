@@ -51,6 +51,6 @@ span.userLabel {
 }
 .userMessage {
   position: absolute;
-  bottom: 150%;
+  bottom: 3rem;
   left: 0;
 }
