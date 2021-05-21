@@ -3,7 +3,7 @@ import { getOrientation } from "../../utils";
 import Avatar from "../Avatar";
 import styles from "./user.module.css";
 
-const User = React.forwardRef(({ socketId, scene, userInstances, position, orientation: givenOrientation = 'S', outfit, isPlayer }, ref) => {
+const User = React.forwardRef(({ socketId, scene, userInstances, position, orientation: givenOrientation = 'S', outfit, message, isPlayer }, ref) => {
   const [orientation, setOrientation] = useState(null);
   const [isMoving, setIsMoving] = useState(false);
   const [transitionDuration, setTransitionDuration] = useState(null);
@@ -73,6 +73,7 @@ const User = React.forwardRef(({ socketId, scene, userInstances, position, orien
         zIndex: `${position.y}`
       }}
       ref={ref}>
+        {message && <span className={styles.userMessage}>{message}</span>}
         <span className={styles.userAvatar}><Avatar {...{ orientation, outfit, socketId, isMoving }} /></span>
         <span className={styles.userLabel}>{socketId.slice(0, 5)}</span>
     </div>

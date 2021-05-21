@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getOrientation } from "../../utils";
 import Chat from "../Chat";
 import Title from "../Title";
@@ -13,8 +13,8 @@ const Scene = React.forwardRef(({ children, socket, userList, userInstances, pla
       const { clientX, clientY } = e;
       const { x, y } = ref.current.getBoundingClientRect();
       const position = {
-        x: (clientX - y) - 24, // todo better
-        y: (clientY - x) - 24
+        x: (clientX - x),
+        y: (clientY - y)
       }
       // need to base prev coords on user element's coords AT TIME OF CLICK
       let prevPosition = userInstances.current[playerId].getBoundingClientRect();
@@ -37,7 +37,7 @@ const Scene = React.forwardRef(({ children, socket, userList, userInstances, pla
     <div className={styles.Scene} ref={ref}>
       <Title />
       {children}
-      <Chat />
+      <Chat {...{ socket, playerId }} />
     </div>
   );
 });

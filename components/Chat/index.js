@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./chat.module.css";
 
-const Chat = ({ socketId }) => {
+const Chat = ({ socket, playerId }) => {
   const [message, setMessage] = useState('');
   const inputRef = useRef(null);
   const buttonRef = useRef(null);
   const writeMessage = (e) => setMessage(e.target.value);
   const submitMessage = () => {
-    console.log(message);
+    setMessage('');
+    socket.emit('a user talked', {
+      socketId: playerId,
+      message
+    });
   }
   useEffect(() => {
     if (!inputRef.current || !buttonRef.current) return;
@@ -20,7 +24,7 @@ const Chat = ({ socketId }) => {
   }, [inputRef.current, buttonRef.current]);
   return (
     <div className={styles.Chat}>
-      <input type="text" defaultValue={message} onInput={writeMessage} ref={inputRef} />
+      <input type="text" value={message} onInput={writeMessage} ref={inputRef} />
       <button type="button" onClick={submitMessage} ref={buttonRef}>Send</button>
     </div>
   );

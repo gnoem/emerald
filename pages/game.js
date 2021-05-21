@@ -32,19 +32,27 @@ const Game = () => {
           return updatedUsers;
         });
       });
+      socket.on('a user talked', (user) => {
+        const [socketId, data] = Object.entries(user)[0];
+        setUserList(prevUsers => {
+          const updatedUsers = {...prevUsers};
+          updatedUsers[socketId] = data;
+          return updatedUsers;
+        });
+      });
       socket.on('user-disconnected', (users) => {
         setUserList(users);
       });
     });
   }, []);
   const users = Object.keys(userList).map(socketId => {
-    const { position, orientation, outfit } = userList[socketId];
+    const { position, orientation, outfit, message } = userList[socketId];
     const isPlayer = socketId === playerId;
     return (
       <User
         key={socketId}
         ref={(el) => userInstances.current[socketId] = el}
-        {...{ socketId, scene: sceneRef.current, userInstances, outfit, position, orientation, isPlayer }}
+        {...{ socketId, scene: sceneRef.current, userInstances, outfit, position, message, orientation, isPlayer }}
       />
     );
   });

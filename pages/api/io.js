@@ -30,7 +30,7 @@ const ioHandler = (_, res) => {
       });
       socket.on('a user moved', ({ socketId, position, orientation }) => {
         const data = {
-          ...users[socket.id],
+          ...users[socketId],
           position,
           orientation
         }
@@ -41,6 +41,30 @@ const ioHandler = (_, res) => {
         socket.broadcast.emit('a user moved', {
           [socketId]: data
         });
+      });
+      socket.on('a user talked', ({ socketId, message }) => {
+        console.log(`socketId: ${socketId}, message: ${message}`)
+        const data = {
+          ...users[socketId],
+          message
+        }
+        users[socketId] = data;
+        socket.emit('a user talked', {
+          [socketId]: data
+        });
+        socket.broadcast.emit('a user talked', {
+          [socketId]: data
+        });
+        setTimeout(() => {
+          delete data.message;
+          users[socketId] = data;
+          socket.emit('a user talked', {
+            [socketId]: data
+          });
+          socket.broadcast.emit('a user talked', {
+            [socketId]: data
+          });
+        }, 5000);
       });
       socket.on('disconnect', () => {
         delete users[socket.id];
