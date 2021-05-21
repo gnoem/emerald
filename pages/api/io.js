@@ -43,7 +43,6 @@ const ioHandler = (_, res) => {
         });
       });
       socket.on('a user talked', ({ socketId, message }) => {
-        console.log(`socketId: ${socketId}, message: ${message}`)
         const data = {
           ...users[socketId],
           message

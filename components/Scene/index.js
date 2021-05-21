@@ -23,6 +23,7 @@ const Scene = React.forwardRef(({ children, socket, userList, userInstances, pla
         y: prevPosition.y - y
       }
       const orientation = getOrientation(prevPosition.x, prevPosition.y, position.x, position.y);
+      //console.log(`moving player ${orientation} from (${prevPosition.x}, ${prevPosition.y}) to (${position.x}, ${position.y})`);
       // need to wait for transition duration to be set, THEN user can start moving
       socket.emit('a user moved', {
         socketId: playerId,
