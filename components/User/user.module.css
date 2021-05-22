@@ -38,6 +38,7 @@
   background: rgba(0, 0, 0, 0.1);
 }
 span.userLabel {
+  font-family: var(--mono-font);
   white-space: nowrap;
   line-height: 1.5;
   padding: 0 0.5rem;

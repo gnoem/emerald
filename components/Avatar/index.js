@@ -6,8 +6,8 @@ export const colorMap = {
 
 const Avatar = ({ orientation, outfit, socketId, isMoving }) => {
   const color = colorMap[outfit?.color ?? 'blue'];
-  outfit.eyes = <Eyes1 key="eyes1" {...{ orientation, isMoving }} />;
-  outfit = Object.values(outfit);
+  if (outfit) outfit.eyes = <Eyes1 key="eyes1" {...{ orientation, isMoving }} />;
+  outfit = Object.values(outfit ?? {});
   return (
     <>
       {(orientation === 'N') && <AvatarS {...{ socketId, color, isMoving, outfit, orientation }} />}

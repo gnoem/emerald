@@ -9,5 +9,5 @@
   font-size: 5rem;
   line-height: 1;
   color: #fff;
-  text-shadow: 0 0 1rem var(--med-theme-color), 0 0 2rem var(--med-theme-color);
+  text-shadow: 0 0 1rem var(--dark-theme-color), 0 0 2rem var(--dark-theme-color);
 }

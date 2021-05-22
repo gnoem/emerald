@@ -1,14 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import Scene from "../components/Scene";
 import User from "../components/User";
+import { UsersContext } from "../contexts";
 
 const Game = () => {
   const [socket, setSocket] = useState(null);
   const [playerId, setPlayerId] = useState(null);
-  const [userList, setUserList] = useState({});
-  const [viewingUser, setViewingUser] = useState(null);
-  const userInstances = useRef({});
+  const [view, setView] = useState({});
+  const { userList, setUserList, userInstances } = useContext(UsersContext);
   const sceneRef = useRef(null);
   useEffect(() => {
     if (playerId) return;
@@ -49,17 +49,16 @@ const Game = () => {
   const users = Object.keys(userList).map(socketId => {
     const { position, orientation, outfit, message, timestamp } = userList[socketId];
     const isPlayer = socketId === playerId;
-    const viewUserCard = () => setViewingUser(socketId);
     return (
       <User
         key={socketId}
         ref={(el) => userInstances.current[socketId] = el}
-        {...{ socketId, scene: sceneRef.current, userInstances, outfit, position, message, timestamp, orientation, isPlayer, viewUserCard }}
+        {...{ socketId, scene: sceneRef.current, userInstances, outfit, position, message, timestamp, orientation, isPlayer, updateView: setView }}
       />
     );
   });
   return (
-    <Scene ref={sceneRef} {...{ socket, userList, userInstances, viewingUser, updateViewingUser: setViewingUser, playerId }}>
+    <Scene ref={sceneRef} {...{ socket, userList, userInstances, view, updateView: setView, playerId }}>
       {users}
     </Scene>
   );

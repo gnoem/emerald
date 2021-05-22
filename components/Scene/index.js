@@ -6,25 +6,25 @@ import UserCard from "../UserCard";
 
 import styles from "./scene.module.css";
 
-const Scene = React.forwardRef(({ children, socket, userList, userInstances, playerId, viewingUser, updateViewingUser }, ref) => {
+const Scene = React.forwardRef(({ children, socket, userList, userInstances, playerId, view, updateView }, ref) => {
   return (
     <div className={styles.Scene}>
       <Title />
-      <Canvas {...{ socket, viewingUser, userList, userInstances, playerId, ref }}>
+      <Canvas {...{ socket, view, userList, userInstances, playerId, ref }}>
         <img src="/assets/map/town.png" className={styles.map} />
         {children}
       </Canvas>
       <Chat {...{ socket, playerId }} />
-      <UserCard {...{ user: viewingUser, updateViewingUser }} />
+      <UserCard {...{ view, updateView }} />
     </div>
   );
 });
 
-const Canvas = React.forwardRef(({ children, socket, viewingUser, userList, userInstances, playerId }, ref) => {
+const Canvas = React.forwardRef(({ children, socket, view, userList, userInstances, playerId }, ref) => {
   useEffect(() => {
     if (!ref.current || !playerId || !socket) return;
     const moveUser = (e) => {
-      if (viewingUser) return;
+      if (Object.entries(view).length) return;
       if (e.target.closest('[class*=Chat] *')) return;
       if (e.target.closest('[class*=User] *')) return;
       if (e.target.closest('[class*=UserCard] *')) return;
@@ -51,9 +51,9 @@ const Canvas = React.forwardRef(({ children, socket, viewingUser, userList, user
     }
     ref.current.addEventListener('click', moveUser);
     return () => ref.current?.removeEventListener('click', moveUser);
-  }, [socket, viewingUser, userList, playerId, ref.current]);
+  }, [socket, view, userList, playerId, ref.current]);
   return (
-    <div className={`${styles.Canvas} ${viewingUser ? styles.dim : ''}`} ref={ref}>
+    <div className={`${styles.Canvas} ${(view.user && !view.selfDestruct) ? styles.dim : ''}`} ref={ref}>
       {children}
     </div>
   );

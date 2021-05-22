@@ -26,7 +26,7 @@ const Chat = ({ socket, playerId }) => {
   return (
     <div className={styles.Chat}>
       <input type="text" value={message} onInput={writeMessage} ref={inputRef} />
-      <button type="button" onClick={submitMessage} ref={buttonRef}>Send</button>
+      <button type="button" className="btn" onClick={submitMessage} ref={buttonRef}>Send</button>
     </div>
   );
 }

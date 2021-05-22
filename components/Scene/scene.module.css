@@ -26,5 +26,5 @@
   width: 90%;
   height: auto;
   transform: translate3d(-50%, 0, 0);
-  image-rendering: pixelated
+  image-rendering: pixelated;
 }
