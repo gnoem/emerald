@@ -7,6 +7,7 @@ const Game = () => {
   const [socket, setSocket] = useState(null);
   const [playerId, setPlayerId] = useState(null);
   const [userList, setUserList] = useState({});
+  const [viewingUser, setViewingUser] = useState(null);
   const userInstances = useRef({});
   const sceneRef = useRef(null);
   useEffect(() => {
@@ -48,16 +49,17 @@ const Game = () => {
   const users = Object.keys(userList).map(socketId => {
     const { position, orientation, outfit, message, timestamp } = userList[socketId];
     const isPlayer = socketId === playerId;
+    const viewUserCard = () => setViewingUser(socketId);
     return (
       <User
         key={socketId}
         ref={(el) => userInstances.current[socketId] = el}
-        {...{ socketId, scene: sceneRef.current, userInstances, outfit, position, message, timestamp, orientation, isPlayer }}
+        {...{ socketId, scene: sceneRef.current, userInstances, outfit, position, message, timestamp, orientation, isPlayer, viewUserCard }}
       />
     );
   });
   return (
-    <Scene ref={sceneRef} {...{ socket, userList, userInstances, playerId }}>
+    <Scene ref={sceneRef} {...{ socket, userList, userInstances, viewingUser, updateViewingUser: setViewingUser, playerId }}>
       {users}
     </Scene>
   );
