@@ -8,10 +8,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-bottom: 0.5rem;
+  padding-bottom: 1rem;
 }
 .Chat::before {
-  content: '';
   position: absolute;
   z-index: -1;
   bottom: 0;

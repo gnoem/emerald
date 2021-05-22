@@ -10,7 +10,8 @@ const Chat = ({ socket, playerId }) => {
     setMessage('');
     socket.emit('a user talked', {
       socketId: playerId,
-      message
+      message,
+      timestamp: Date.now()
     });
   }
   useEffect(() => {

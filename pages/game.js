@@ -46,13 +46,13 @@ const Game = () => {
     });
   }, []);
   const users = Object.keys(userList).map(socketId => {
-    const { position, orientation, outfit, message } = userList[socketId];
+    const { position, orientation, outfit, message, timestamp } = userList[socketId];
     const isPlayer = socketId === playerId;
     return (
       <User
         key={socketId}
         ref={(el) => userInstances.current[socketId] = el}
-        {...{ socketId, scene: sceneRef.current, userInstances, outfit, position, message, orientation, isPlayer }}
+        {...{ socketId, scene: sceneRef.current, userInstances, outfit, position, message, timestamp, orientation, isPlayer }}
       />
     );
   });

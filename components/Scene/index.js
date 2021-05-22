@@ -37,6 +37,7 @@ const Scene = React.forwardRef(({ children, socket, userList, userInstances, pla
   return (
     <div className={styles.Scene} ref={ref}>
       <Title />
+      <img src="/assets/map/town.png" className={styles.map} />
       {children}
       <Chat {...{ socket, playerId }} />
     </div>

@@ -42,10 +42,13 @@ const ioHandler = (_, res) => {
           [socketId]: data
         });
       });
-      socket.on('a user talked', ({ socketId, message }) => {
+      let messageTimer;
+      socket.on('a user talked', ({ socketId, message, timestamp }) => {
+        clearTimeout(messageTimer);
         const data = {
           ...users[socketId],
-          message
+          message,
+          timestamp
         }
         users[socketId] = data;
         socket.emit('a user talked', {
@@ -54,9 +57,10 @@ const ioHandler = (_, res) => {
         socket.broadcast.emit('a user talked', {
           [socketId]: data
         });
-        setTimeout(() => {
+        messageTimer = setTimeout(() => {
           const upToDateData = {...users[socketId]};
           delete upToDateData.message;
+          delete upToDateData.timestamp;
           users[socketId] = upToDateData;
           socket.emit('a user talked', {
             [socketId]: upToDateData

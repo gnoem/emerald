@@ -16,10 +16,25 @@ html, body {
   font-family: var(--mono-font);
 }
 body {
-  background: linear-gradient(135deg, #f1e1f1, #6ea7b7);
   display: flex;
   align-items: center;
   justify-content: center;
+}
+body::before, body::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+body::after {
+  z-index: -1;
+  background: linear-gradient(135deg, #5cdcff, #ff8cff);
+  opacity: 0.5;
+}
+body::before {
+  z-index: -2;
+  background: url('http://static.colourlovers.com/images/patterns/4233/4233889.png');
+  filter: hue-rotate(40deg);
 }
 a {
   color: inherit;
