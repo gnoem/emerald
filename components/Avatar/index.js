@@ -1,13 +1,28 @@
+import { randomFromArray } from "../../utils";
+
 export const colorMap = {
   blue: ['#005b97', '#0075be', '#1e9cd7', '#cce0f4'],
   pink: ['#930097', '#B900BE', '#D01ED7', '#F1CCF4'],
   green: ['#609700', '#7ABE00', '#9DD71E', '#E6F4CC'],
 }
 
-const Avatar = ({ orientation, outfit, socketId, isMoving }) => {
-  const color = colorMap[outfit?.color ?? 'blue'];
-  if (outfit) outfit.eyes = <Eyes1 key="eyes1" {...{ orientation, isMoving }} />;
-  outfit = Object.values(outfit ?? {});
+const defaultOutfit = {
+  color: randomFromArray(Object.keys(colorMap)),
+  eyes: 'eyes1'
+}
+
+const outfitMap = {
+  face: {
+    eyes1: (props) => <Eyes1 key="eyes1" {...props} />
+  }
+}
+
+const Avatar = ({ orientation, outfit: rawOutfit = defaultOutfit, socketId, isMoving }) => {
+  const color = colorMap[rawOutfit?.color ?? 'blue'];
+  const outfit = Object.entries(rawOutfit).map(([category, keyword]) => {
+    if (category === 'color') return null;
+    return outfitMap[category][keyword]({ orientation, isMoving });
+  }).filter(el => el);
   return (
     <>
       {(orientation === 'N') && <AvatarS {...{ socketId, color, isMoving, outfit, orientation }} />}

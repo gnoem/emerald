@@ -15,7 +15,7 @@ const Scene = React.forwardRef(({ children, socket, userList, userInstances, pla
         {children}
       </Canvas>
       <Chat {...{ socket, playerId }} />
-      <UserCard {...{ view, updateView }} />
+      <UserCard {...{ socket, view, updateView, playerId }} />
     </div>
   );
 });
@@ -35,7 +35,7 @@ const Canvas = React.forwardRef(({ children, socket, view, userList, userInstanc
         y: (clientY - y)
       }
       // need to base prev coords on user element's coords AT TIME OF CLICK
-      let prevPosition = userInstances.current[playerId].getBoundingClientRect();
+      let prevPosition = userInstances[playerId].getBoundingClientRect();
       prevPosition = {
         x: prevPosition.x - x,
         y: prevPosition.y - y

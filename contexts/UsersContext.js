@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export const UsersContext = React.createContext();
 
@@ -8,7 +8,7 @@ const UsersContextProvider = ({ children }) => {
   const contextValue = {
     userList,
     setUserList,
-    userInstances
+    userInstances: userInstances.current
   }
   return (
     <UsersContext.Provider value={contextValue}>

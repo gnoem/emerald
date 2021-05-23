@@ -19,7 +19,8 @@
 }
 .Card {
   --title-height: 3rem;
-  --avatar-size: 10rem;
+  --title-text-shadow: 2px 2px 0 var(--dark-theme-color);
+  --avatar-size: 7rem;
   overflow: hidden;
   position: absolute;
   z-index: 10;
@@ -40,6 +41,7 @@
   height: var(--title-height);
   color: #fff;
   font-size: 1.5rem;
+  filter: drop-shadow(var(--title-text-shadow));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -49,13 +51,15 @@
 }
 .CardContent > div {
   padding: 1.5rem;
+  display: flex;
+  align-items: flex-start;
 }
 .CardContent > h2 {
   line-height: var(--title-height);
   padding: 0 1rem;
   margin: 0;
   color: #fff;
-  text-shadow: 2px 2px 0 var(--dark-theme-color);
+  text-shadow: var(--title-text-shadow);
   background: var(--med-theme-color);
 }
 .Foreground {
@@ -75,5 +79,29 @@
 .CardAvatar {
   width: var(--avatar-size);
   height: var(--avatar-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid #eee;
+}
+.CardAvatar svg {
+  width: calc(0.8 * var(--avatar-size));
+  height: calc(0.8 * var(--avatar-size));
+}
+
+.CardDescription {
+  padding-left: 1.5rem;
+}
+
+.WardrobeCategory {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 0 -1rem -1rem 0;
+}
+.WardrobeCategory > button {
+  width: 2rem;
+  height: 2rem;
+  margin: 0 1rem 1rem 0;
 }

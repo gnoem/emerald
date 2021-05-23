@@ -9,7 +9,7 @@ const User = React.forwardRef(({ socketId, scene, userInstances, position, orien
   const [isMoving, setIsMoving] = useState(false);
   const [transitionTimeout, setTransitionTimeout] = useState(null);
   const prevPosition = usePrevious(position);
-  const element = userInstances.current[socketId];
+  const element = userInstances[socketId];
   useEffect(() => setOrientation(givenOrientation), [givenOrientation]);
   useEffect(() => {
     if (!position || !element || !scene) return;

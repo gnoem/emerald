@@ -15,7 +15,8 @@ const ioHandler = (_, res) => {
           y: randomIntBetween(150, 350)
         },
         outfit: {
-          color: randomFromArray(Object.keys(colorMap))
+          color: randomFromArray(Object.keys(colorMap)),
+          face: 'eyes1'
         }
       };
       socket.broadcast.emit('a user connected', users);
@@ -70,9 +71,25 @@ const ioHandler = (_, res) => {
           });
         }, 5000);
       });
+      socket.on('a user changed their outfit', ({ socketId, outfit }) => {
+        const data = {
+          ...users[socketId],
+          outfit
+        }
+        users[socketId] = data;
+        socket.emit('a user talked', {
+          [socketId]: data
+        });
+        socket.broadcast.emit('a user talked', {
+          [socketId]: data
+        });
+      });
       socket.on('disconnect', () => {
         delete users[socket.id];
-        socket.broadcast.emit('user-disconnected', users);
+        socket.broadcast.emit('user-disconnected', {
+          socketId: socket.id,
+          users
+        });
       });
     });
     res.socket.server.io = io;

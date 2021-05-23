@@ -25,24 +25,21 @@ const Game = () => {
       socket.on('a user connected', (users) => {
         setUserList(users);
       });
-      socket.on('a user moved', (user) => {
+      const handleUserUpdate = (user) => {
         const [socketId, data] = Object.entries(user)[0];
         setUserList(prevUsers => {
           const updatedUsers = {...prevUsers};
           updatedUsers[socketId] = data;
           return updatedUsers;
         });
-      });
-      socket.on('a user talked', (user) => {
-        const [socketId, data] = Object.entries(user)[0];
-        setUserList(prevUsers => {
-          const updatedUsers = {...prevUsers};
-          updatedUsers[socketId] = data;
-          return updatedUsers;
-        });
-      });
-      socket.on('user-disconnected', (users) => {
+      }
+      socket.on('a user moved', handleUserUpdate);
+      socket.on('a user talked', handleUserUpdate);
+      socket.on('a user changed their outfit', handleUserUpdate);
+      socket.on('user-disconnected', ({ socketId, users }) => {
         setUserList(users);
+        // todo figure out how to remove element from userInstances
+        // something like clearUserInstance(socketId);
       });
     });
   }, []);
@@ -52,7 +49,7 @@ const Game = () => {
     return (
       <User
         key={socketId}
-        ref={(el) => userInstances.current[socketId] = el}
+        ref={(el) => userInstances[socketId] = el}
         {...{ socketId, scene: sceneRef.current, userInstances, outfit, position, message, timestamp, orientation, isPlayer, updateView: setView }}
       />
     );
