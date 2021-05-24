@@ -1,0 +1,10 @@
+.Map {
+  image-rendering: pixelated;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.Map img {
+  position: absolute;
+  transform: scale(1.3);
+}

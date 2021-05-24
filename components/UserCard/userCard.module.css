@@ -85,6 +85,7 @@
   border: 1px solid #eee;
 }
 .CardAvatar svg {
+  overflow: visible;
   width: calc(0.8 * var(--avatar-size));
   height: calc(0.8 * var(--avatar-size));
 }

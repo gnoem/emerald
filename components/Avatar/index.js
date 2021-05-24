@@ -12,6 +12,9 @@ const defaultOutfit = {
 }
 
 const outfitMap = {
+  head: {
+    antennae: (props) => <Antennae key="antennae" {...props} />
+  },
   face: {
     eyes1: (props) => <Eyes1 key="eyes1" {...props} />
   }
@@ -21,7 +24,7 @@ const Avatar = ({ orientation, outfit: rawOutfit = defaultOutfit, socketId, isMo
   const color = colorMap[rawOutfit?.color ?? 'blue'];
   const outfit = Object.entries(rawOutfit).map(([category, keyword]) => {
     if (category === 'color') return null;
-    return outfitMap[category][keyword]({ orientation, isMoving });
+    return outfitMap[category]?.[keyword]?.({ orientation, isMoving });
   }).filter(el => el);
   return (
     <>
@@ -241,6 +244,20 @@ const Eyes1 = ({ orientation, isMoving }) => {
       <ellipse transform={transformOptions[orientation]} cx="45" cy="30" rx="6" ry="3" fill="#fff"></ellipse>
       <ellipse transform={transformOptions[orientation]} cx="29" cy="30" rx="2" ry="2" fill="#000"></ellipse>
       <ellipse transform={transformOptions[orientation]} cx="45" cy="30" rx="2" ry="2" fill="#000"></ellipse>
+      <Animation show={isMoving} attributeName="transform" type="translate" values="0 0;0 -3;0 0" dur="0.5s" repeatCount="indefinite" />
+    </g>
+  );
+}
+
+const Antennae = ({ orientation, isMoving }) => {
+  const transformOptions = {
+    S: 'rotate(0)',
+    SE: ''
+  }
+  return (
+    <g id="antenna" transform={transformOptions[orientation]}>
+      <path stroke="#000" strokeWidth="0.1" d="M43,13.5l.14,0h-.6l-.38-.33.15-.57c.7.37,1,.37.84,0v-.17a1.76,1.76,0,0,1,.28-.66,3.26,3.26,0,0,1,.72-.85,3,3,0,0,1,1.61-.73c1.63-.2,2.67,1.1,3.33,2.41,1.83,3.64,1.84,8.05,2,12,.05,1.45,2.3,1.45,2.25,0a56,56,0,0,0-.67-8c-.43-2.44-1.16-5.12-2.84-7A5,5,0,0,0,44.3,8.2c-1.93.75-4.09,3.05-3.23,5.27a1.72,1.72,0,0,0,3.1.39c.68-1.18-.33-3-1.78-2.53S41.61,14,43,13.5Z" transform="translate(-22.88 -17.72)"/>
+      <path stroke="#000" strokeWidth="0.1" d="M75.94,11.16c-1.23-.42-2.28.95-2,2.1a1.7,1.7,0,0,0,2.74.83c2-1.73-.22-4.76-1.93-5.71a5,5,0,0,0-5.63.44c-1.91,1.55-2.76,4.26-3.26,6.57a49.39,49.39,0,0,0-.87,9c0,1.45,2.2,1.44,2.25,0,.13-4,.16-8.38,2-12,.65-1.3,1.66-2.56,3.25-2.42a3.07,3.07,0,0,1,1.7.73,3.47,3.47,0,0,1,.72.86,2.11,2.11,0,0,1,.24.53.63.63,0,0,1,0,.3c-.14.37.14.38.83,0l.16.57-.38.32h-.6l.13.05c1.38.46,2-1.71.6-2.17Z" transform="translate(-22.88 -17.72)"/>
       <Animation show={isMoving} attributeName="transform" type="translate" values="0 0;0 -3;0 0" dur="0.5s" repeatCount="indefinite" />
     </g>
   );

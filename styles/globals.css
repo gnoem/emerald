@@ -5,7 +5,7 @@
 :root {
   --default-font: 'Helvetica', sans-serif;
   --header-font: 'Easy November', sans-serif;
-  --mono-font: 'Inconsolata', sans-serif;
+  --mono-font: 'Carbon', 'Inconsolata', sans-serif;
   --dark-theme-color: #a646ff;
   --med-theme-color: #bc75ff;
   --light-theme-color: #e4c7ff;
@@ -47,7 +47,7 @@ a {
   text-decoration: none;
 }
 input, button {
-  font-family: var(--default-font);
+  font-family: var(--mono-font);
   border-radius: 999px;
 }
 input {

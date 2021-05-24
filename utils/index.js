@@ -2,6 +2,12 @@ export const randomIntBetween = (min, max) => {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
+export const getDistanceBetween = (cx, cy, ex, ey) => {
+  const dy = ey - cy;
+  const dx = ex - cx;
+  return Math.hypot(dx, dy);
+}
+
 export const getAngle = (cx, cy, ex, ey) => {
   const dy = ey - cy;
   const dx = ex - cx;

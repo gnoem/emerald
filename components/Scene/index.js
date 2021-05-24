@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect } from "react";
 import { getOrientation } from "../../utils";
 import Chat from "../Chat";
 import Title from "../Title";
 import UserCard from "../UserCard";
+import loadMap from "./loadMap";
 
 import styles from "./scene.module.css";
 
@@ -11,7 +12,7 @@ const Scene = React.forwardRef(({ children, socket, userList, userInstances, pla
     <div className={styles.Scene}>
       <Title />
       <Canvas {...{ socket, view, userList, userInstances, playerId, ref }}>
-        <img src="/assets/map/town.png" className={styles.map} />
+        {loadMap['town']}
         {children}
       </Canvas>
       <Chat {...{ socket, playerId }} />
@@ -30,7 +31,7 @@ const Canvas = React.forwardRef(({ children, socket, view, userList, userInstanc
       if (e.target.closest('[class*=UserCard] *')) return;
       const { clientX, clientY } = e;
       const { x, y } = ref.current.getBoundingClientRect();
-      const position = {
+      let position = {
         x: (clientX - x),
         y: (clientY - y)
       }
@@ -40,6 +41,17 @@ const Canvas = React.forwardRef(({ children, socket, view, userList, userInstanc
         x: prevPosition.x - x,
         y: prevPosition.y - y
       }
+      // todo: check for collisions - look at what objects are inside the map and check to see if they lie in the user's projected path
+      // if so, adjust position so that the projected path ends at the collision object's boundary
+      const preventCollision = () => {
+        const collisionPoint = () => { // returns { x, y } coordinates if collision
+          return null;
+        }
+        if (collisionPoint()) {
+          position = collisionPoint();
+        }
+      }
+      preventCollision();
       const orientation = getOrientation(prevPosition.x, prevPosition.y, position.x, position.y);
       //console.log(`moving player ${orientation} from (${prevPosition.x}, ${prevPosition.y}) to (${position.x}, ${position.y})`);
       // need to wait for transition duration to be set, THEN user can start moving
