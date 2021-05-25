@@ -69,21 +69,21 @@ const Canvas = React.forwardRef(({ children, socket, view, userList, userInstanc
           const collisionPoints = Object.values(objectBoundaries).map(boundaries => {
             return Object.entries(boundaries).map(([boundaryName, points]) => {
               const [p1, p0] = points;
-              const s1 = {
+              const boundary = {
                 x: p1.x - p0.x,
                 y: p1.y - p0.y
               }
-              const s2 = {
+              const path = {
                 x: prevPosition.x - position.x,
                 y: prevPosition.y - position.y
               }
-              const s = (-s1.y * (p0.x - position.x) + s1.x * (p0.y - position.y)) / (-s2.x * s1.y + s1.x * s2.y);
-              const t = (s2.x * (p0.y - position.y) - s2.y * (p0.x - position.x)) / (-s2.x * s1.y + s1.x * s2.y);
+              const s = (-boundary.y * (p0.x - position.x) + boundary.x * (p0.y - position.y)) / (-path.x * boundary.y + boundary.x * path.y);
+              const t = (path.x * (p0.y - position.y) - path.y * (p0.x - position.x)) / (-path.x * boundary.y + boundary.x * path.y);
               if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
-                return {
+                return { // point of intersection
                   boundaryName,
-                  x: p0.x + (t * s1.x),
-                  y: p0.y + (t * s1.y)
+                  x: p0.x + (t * boundary.x),
+                  y: p0.y + (t * boundary.y)
                 }
               }
               return null;
@@ -120,6 +120,7 @@ const Canvas = React.forwardRef(({ children, socket, view, userList, userInstanc
         }
       }
       preventCollision();
+      // todo also? check if currently on top of a boundary line and prevent movement in opposite direction (e.g. if on top of S boundary, prevent moving N)
       socket.emit('a user moved', {
         socketId: playerId,
         position,
