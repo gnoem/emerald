@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { MapContext } from "../../contexts";
 import styles from "./map.module.css";
 
 const Map = ({ children }) => {
@@ -13,15 +14,16 @@ export const Town = () => {
   return (
     <Map>
       <Object name="townhall" detectCollision />
-      <Object name="mossyhouse" />
+      <Object name="mossyhouse" detectCollision />
       <Object name="wishingwell" />
-      <Object name="teapot" />
+      <Object name="teapot" detectCollision />
     </Map>
   );
 }
 
 const Object = ({ name, detectCollision }) => {
   const [zIndex, setZIndex] = useState(null);
+  const { mapObjects } = useContext(MapContext);
   const objectRef = useRef(null);
   const config = {
     townhall: [70, 300],
@@ -32,15 +34,16 @@ const Object = ({ name, detectCollision }) => {
     if (!config[name]) return;
     setZIndex(config[name][0] + objectRef.current?.scrollHeight);
   }, [name, objectRef.current]);
-  useEffect(() => {
-    if (!detectCollision) return;
-  }, [detectCollision]);
+  const createReference = (element) => {
+    if (detectCollision) mapObjects[name] = element;
+    objectRef.current = element;
+  }
   if (!config[name]) return null;
   return (
     <img src={`/assets/map/${name}.png`} style={{
       top: `${config[name][0]}px`,
       left: `${config[name][1]}px`,
       zIndex: `${zIndex}`
-    }} ref={objectRef} />
+    }} ref={createReference} />
   );
 }

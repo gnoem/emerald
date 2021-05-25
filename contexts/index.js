@@ -1,4 +1,5 @@
 import UsersContextProvider, { UsersContext } from "./UsersContext";
+import MapContextProvider, { MapContext } from "./MapContext";
 
 const AppContextProvider = ({ children }) => {
   return (
@@ -9,4 +10,4 @@ const AppContextProvider = ({ children }) => {
 }
 
 export default AppContextProvider;
-export { UsersContext }
+export { UsersContext, MapContextProvider, MapContext }

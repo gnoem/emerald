@@ -28,3 +28,11 @@
   transform: translate3d(-50%, 0, 0);
   image-rendering: pixelated;
 }
+
+.collisionPoint {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: red;
+  cursor: pointer;
+}
