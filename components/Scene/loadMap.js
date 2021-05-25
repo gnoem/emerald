@@ -1,7 +1,8 @@
-import { Town } from "../Map";
+import { Plaza, Swamp } from "../Map";
 
 const loadMaps = {
-  town: <Town />
+  plaza: <Plaza />,
+  swamp: <Swamp />
 }
 
 export default loadMaps;

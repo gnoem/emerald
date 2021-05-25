@@ -8,13 +8,13 @@ import loadMap from "./loadMap";
 
 import styles from "./scene.module.css";
 
-const Scene = React.forwardRef(({ children, socket, userList, userInstances, playerId, view, updateView }, ref) => {
+const Scene = React.forwardRef(({ children, room, socket, userList, userInstances, playerId, view, updateView }, ref) => {
   return (
     <div className={styles.Scene}>
       <Title />
       <MapContextProvider>
         <Canvas {...{ socket, view, userList, userInstances, playerId, ref }}>
-          {loadMap['town']}
+          {loadMap[room]}
           {children}
         </Canvas>
       </MapContextProvider>

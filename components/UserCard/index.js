@@ -51,6 +51,7 @@ const CardContent = ({ socket, socketId, isPlayer }) => {
           <Avatar outfit={outfit} orientation="SE" socketId={`userCard-${socketId}`} />
         </CardAvatar>
         <CardDescription>
+          <b>location:</b> {userList[socketId].room}
           {isPlayer
             ? <Wardrobe {...{ socket, socketId, outfit }} />
             : <UserDescription />}

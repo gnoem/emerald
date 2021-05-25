@@ -10,13 +10,21 @@ const Map = ({ children }) => {
   );
 }
 
-export const Town = () => {
+export const Plaza = () => {
   return (
     <Map>
       <Object name="townhall" preventCollision />
       <Object name="mossyhouse" preventCollision />
       <Object name="wishingwell" />
       <Object name="teapot" preventCollision />
+    </Map>
+  );
+}
+
+export const Swamp = () => {
+  return (
+    <Map>
+      <Object name="witchshack" preventCollision />
     </Map>
   );
 }
@@ -28,7 +36,8 @@ const Object = ({ name, preventCollision }) => {
   const config = {
     townhall: [70, 300],
     mossyhouse: [170, 60],
-    wishingwell: [250, 350]
+    wishingwell: [250, 350],
+    witchshack: [250, 350]
   }
   useEffect(() => {
     if (!config[name]) return;

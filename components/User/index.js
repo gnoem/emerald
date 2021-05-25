@@ -4,7 +4,8 @@ import { getOrientation } from "../../utils";
 import Avatar from "../Avatar";
 import styles from "./user.module.css";
 
-const User = React.forwardRef(({ socketId, scene, userInstances, position, orientation: givenOrientation = 'S', outfit, message, timestamp, isPlayer, updateView }, ref) => {
+const User = React.forwardRef(({ socketId, scene, userInstances, userData, isPlayer, viewUserCard }, ref) => {
+  const { position, orientation: givenOrientation = 'S', outfit, message, timestamp } = userData;
   const [orientation, setOrientation] = useState(null);
   const [isMoving, setIsMoving] = useState(false);
   const [transitionTimeout, setTransitionTimeout] = useState(null);
@@ -58,9 +59,6 @@ const User = React.forwardRef(({ socketId, scene, userInstances, position, orien
     window.addEventListener('mousemove', checkOrientation);
     return () => window.removeEventListener('mousemove', checkOrientation);
   }, [isMoving, element]);
-  const viewUserCard = () => {
-    updateView({ user: socketId });
-  }
   return (
     <div
       className={styles.User}

@@ -1,15 +1,18 @@
 import { Server } from "socket.io";
 import { colorMap } from "../../components/Avatar";
+import { rooms } from "../../config";
 import { randomFromArray, randomIntBetween } from "../../utils";
 
 const users = {};
 
-const ioHandler = (_, res) => {
+const ioHandler = (req, res) => {
   if (!res.socket.server.io) {
     console.log('Starting socket.io');
     const io = new Server(res.socket.server);
     io.on('connection', (socket) => {
       users[socket.id] = {
+        //displayName,
+        room: 'plaza', //randomFromArray(Object.keys(rooms)),
         position: { // todo better: needs to be based on room where user spawns
           x: randomIntBetween(150, 550),
           y: randomIntBetween(150, 350)
@@ -18,17 +21,14 @@ const ioHandler = (_, res) => {
           color: randomFromArray(Object.keys(colorMap)),
           face: 'eyes1'
         }
-      };
-      socket.broadcast.emit('a user connected', users);
+      }
       socket.on('hello', () => {
         socket.emit('hello', {
           id: socket.id,
           users
         });
       });
-      socket.on('a user connected', () => {
-        socket.emit('a user connected', users);
-      });
+      socket.broadcast.emit('a user connected', users);
       socket.on('a user moved', ({ socketId, position, orientation }) => {
         const data = {
           ...users[socketId],
@@ -36,10 +36,7 @@ const ioHandler = (_, res) => {
           orientation
         }
         users[socketId] = data;
-        socket.emit('a user moved', {
-          [socketId]: data
-        });
-        socket.broadcast.emit('a user moved', {
+        io.sockets.emit('a user moved', {
           [socketId]: data
         });
       });
@@ -52,10 +49,7 @@ const ioHandler = (_, res) => {
           timestamp
         }
         users[socketId] = data;
-        socket.emit('a user talked', {
-          [socketId]: data
-        });
-        socket.broadcast.emit('a user talked', {
+        io.sockets.emit('a user talked', {
           [socketId]: data
         });
         messageTimer = setTimeout(() => {
@@ -77,10 +71,7 @@ const ioHandler = (_, res) => {
           outfit
         }
         users[socketId] = data;
-        socket.emit('a user talked', {
-          [socketId]: data
-        });
-        socket.broadcast.emit('a user talked', {
+        io.sockets.emit('a user talked', {
           [socketId]: data
         });
       });
