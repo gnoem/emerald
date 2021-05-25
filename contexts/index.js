@@ -1,13 +1,16 @@
 import UsersContextProvider, { UsersContext } from "./UsersContext";
 import MapContextProvider, { MapContext } from "./MapContext";
+import PlayerContextProvider, { PlayerContext } from "./PlayerContext";
 
 const AppContextProvider = ({ children }) => {
   return (
     <UsersContextProvider>
-      {children}
+      <PlayerContextProvider>
+        {children}
+      </PlayerContextProvider>
     </UsersContextProvider>
   );
 }
 
 export default AppContextProvider;
-export { UsersContext, MapContextProvider, MapContext }
+export { UsersContext, MapContextProvider, MapContext, PlayerContext }

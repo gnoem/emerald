@@ -13,15 +13,15 @@ const Map = ({ children }) => {
 export const Town = () => {
   return (
     <Map>
-      <Object name="townhall" detectCollision />
-      <Object name="mossyhouse" detectCollision />
+      <Object name="townhall" preventCollision />
+      <Object name="mossyhouse" preventCollision />
       <Object name="wishingwell" />
-      <Object name="teapot" detectCollision />
+      <Object name="teapot" preventCollision />
     </Map>
   );
 }
 
-const Object = ({ name, detectCollision }) => {
+const Object = ({ name, preventCollision }) => {
   const [zIndex, setZIndex] = useState(null);
   const { mapObjects } = useContext(MapContext);
   const objectRef = useRef(null);
@@ -35,7 +35,7 @@ const Object = ({ name, detectCollision }) => {
     setZIndex(config[name][0] + objectRef.current?.scrollHeight);
   }, [name, objectRef.current]);
   const createReference = (element) => {
-    if (detectCollision) mapObjects[name] = element;
+    if (preventCollision) mapObjects[name] = element; // or define a collision zone?
     objectRef.current = element;
   }
   if (!config[name]) return null;

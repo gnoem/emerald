@@ -10,7 +10,7 @@ const ioHandler = (_, res) => {
     const io = new Server(res.socket.server);
     io.on('connection', (socket) => {
       users[socket.id] = {
-        position: {
+        position: { // todo better: needs to be based on room where user spawns
           x: randomIntBetween(150, 550),
           y: randomIntBetween(150, 350)
         },
