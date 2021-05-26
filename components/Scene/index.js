@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { rooms } from "../../config";
 import { MapContext, MapContextProvider } from "../../contexts";
 import { getDistanceBetween, getOrientation } from "../../utils";
@@ -37,7 +37,14 @@ const Scene = React.forwardRef(({ children, room, socket, userList, userInstance
 
 const Canvas = React.forwardRef(({ children, socket, room, view, userList, userInstances, playerId }, ref) => {
   const { collisionZones } = useContext(MapContext);
-  const objectsRef = useRef({});
+  const [objectsRef, setObjectsRef] = useState({});
+  const updateObjectsRef = (name, element) => {
+    setObjectsRef(prevObjects => ({
+      ...prevObjects,
+      [name]: element
+    }));
+  }
+  const clearObjectsRef = () => setObjectsRef({});
   useEffect(() => {
     if (!ref.current || !playerId || !socket) return;
     const moveUser = (e) => {
@@ -59,7 +66,7 @@ const Canvas = React.forwardRef(({ children, socket, room, view, userList, userI
         y: prevPosition.y - canvasTop
       }
       const orientation = getOrientation(prevPosition.x, prevPosition.y, position.x, position.y);
-      // todo: check for collisions - look at what objects are inside the map and check to see if they lie in the user's projected path
+      // check for collisions - look at what objects are inside the map and check to see if they lie in the user's projected path
       // if so, adjust position so that the projected path ends at the collision object's boundary
       const preventCollision = () => {
         const collisionPoint = () => { // will return { x, y } coordinates if collision
@@ -136,7 +143,7 @@ const Canvas = React.forwardRef(({ children, socket, room, view, userList, userI
             })
             return closestPoint;
           }
-          //showCollisionPoints();
+          // showCollisionPoints();
           return closestCollisionPoint();
         }
         if (collisionPoint()) {
@@ -156,7 +163,12 @@ const Canvas = React.forwardRef(({ children, socket, room, view, userList, userI
   }, [socket, view, userList, playerId, collisionZones, ref.current]);
   return (
     <div className={`${styles.Canvas} ${(view.user && !view.selfDestruct) ? styles.dim : ''}`} ref={ref}>
-      <Map room={room} objectsRef={objectsRef} />
+      <Map {...{
+        room,
+        objectsRef,
+        updateObjectsRef,
+        clearObjectsRef
+      }} />
       {children}
     </div>
   );

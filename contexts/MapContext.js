@@ -1,11 +1,12 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export const MapContext = React.createContext();
 
 const MapContextProvider = ({ children }) => {
-  const collisionZones = useRef({});
+  const [collisionZones, setCollisionZones] = useState({});
   const contextValue = {
-    collisionZones: collisionZones.current
+    collisionZones,
+    setCollisionZones
   }
   return (
     <MapContext.Provider value={contextValue}>
