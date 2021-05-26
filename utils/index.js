@@ -33,3 +33,18 @@ export const getOrientation = (prevX, prevY, x, y) => {
 export const randomFromArray = (array) => {
   return array[Math.floor(Math.random() * array.length)];
 }
+
+export const arraysAreEqual = (array1, array2) => {
+  if (!array1 || !array2)
+    return false;
+  if (array1.length != array2.length)
+    return false;
+  for (let i = 0; i < array1.length; i++) {
+    // Check if we have nested arrays
+    if (array1[i] instanceof Array && array2[i] instanceof Array) {
+      if (!arraysAreEqual(array1, array2)) return false;
+    }           
+    else if (array1[i] != array2[i]) return false;
+  }       
+  return true;
+}

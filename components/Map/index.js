@@ -1,19 +1,26 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { rooms } from "../../config";
 import { MapContext } from "../../contexts";
+import { arraysAreEqual } from "../../utils";
 import styles from "./map.module.css";
 
-const Map = ({ children, room }) => {
+const Map = ({ children, room, objectsRef }) => {
   const [ready, setReady] = useState(false);
-  const objectsRef = useRef({});
   const objectsList = rooms[room]?.objects;
   const mapObjects = objectsList.map(obj => {
-    return <MapObject key={obj} name={obj} objectsRef={objectsRef} />;
+    return <MapObject key={obj} name={obj} objectsRef={objectsRef} ref={(el) => objectsRef.current[obj] = el} />;
   });
   useEffect(() => {
     objectsRef.current = {};
     setReady(true);
   }, [room]);
+  useEffect(() => {
+    const loadedObjects = Object.keys(objectsRef.current);
+    if (arraysAreEqual(objectsList, loadedObjects)) {
+      //setMapIsLoaded(true);
+      // NOW user can spawn
+    }
+  }, [Object.keys(objectsRef.current)]);
   if (!objectsList) {
     console.warn(`room "${room}" not configured!`);
     return null;
@@ -27,12 +34,10 @@ const Map = ({ children, room }) => {
   );
 }
 
-const MapObject = ({ name, objectsRef }) => {
+const MapObject = React.forwardRef(({ name, objectsRef }, objectRef) => {
   const [zIndex, setZIndex] = useState(null);
-  const [forceLoad, setForceLoad] = useState(false);
   const [collisionZone, setCollisionZone] = useState(null);
   const { collisionZones } = useContext(MapContext);
-  const objectRef = useRef(null);
   const config = {
     townhall: [70, 300, 0.3], // [top, left, collision zone height relative to object]
     mossyhouse: [170, 60, 0.2],
@@ -44,12 +49,7 @@ const MapObject = ({ name, objectsRef }) => {
     setZIndex(config[name][0] + objectRef.current.scrollHeight);
   }, [name, objectRef.current?.scrollHeight]);
   useEffect(() => {
-    if (!objectRef.current) return;
-    if (!objectRef.current.scrollHeight) {
-      setTimeout(() => setForceLoad(true), 1000); // so fucking stupid but otherwise the god damn scroll height and shit doesnt load until after you start clicking!!!
-      // todo figure this shit out
-      return;
-    }
+    if (!objectRef.current?.scrollHeight) return;
     let { top: objectTop, left: objectLeft } = objectRef.current.style;
     const { scrollWidth, scrollHeight } = objectRef.current;
     objectTop = parseInt(objectTop);
@@ -84,9 +84,8 @@ const MapObject = ({ name, objectsRef }) => {
         zIndex: `${zIndex}`
       }} ref={objectRef} />
       {collisionZone}
-      {forceLoad && <></>}
     </>
   );
-}
+})
 
 export default Map;

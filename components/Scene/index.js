@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { rooms } from "../../config";
 import { MapContext, MapContextProvider } from "../../contexts";
 import { getDistanceBetween, getOrientation } from "../../utils";
@@ -37,6 +37,7 @@ const Scene = React.forwardRef(({ children, room, socket, userList, userInstance
 
 const Canvas = React.forwardRef(({ children, socket, room, view, userList, userInstances, playerId }, ref) => {
   const { collisionZones } = useContext(MapContext);
+  const objectsRef = useRef({});
   useEffect(() => {
     if (!ref.current || !playerId || !socket) return;
     const moveUser = (e) => {
@@ -155,7 +156,7 @@ const Canvas = React.forwardRef(({ children, socket, room, view, userList, userI
   }, [socket, view, userList, playerId, collisionZones, ref.current]);
   return (
     <div className={`${styles.Canvas} ${(view.user && !view.selfDestruct) ? styles.dim : ''}`} ref={ref}>
-      <Map room={room} />
+      <Map room={room} objectsRef={objectsRef} />
       {children}
     </div>
   );

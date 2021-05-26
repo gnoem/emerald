@@ -1,6 +1,6 @@
 const rooms = {
   plaza: {
-    objects: ['townhall', 'mossyhouse', 'wishingwell', 'teapot']
+    objects: ['townhall', 'mossyhouse', 'wishingwell']
   },
   swamp: {
     objects: ['witchshack']
