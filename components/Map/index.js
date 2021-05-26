@@ -51,8 +51,7 @@ const MapObject = ({ name }) => {
   }
   useEffect(() => {
     if (!config[name] || !rect) return;
-    console.log(rect);
-    setZIndex(Math.round(config[name][0] + rect.height));
+    setZIndex(Math.round(config[name][0] + rect.height - 12)); // 12 is approx half of avatar height but maybe todo better
   }, [rect]);
   useEffect(() => {
     if (!rect?.height) return;

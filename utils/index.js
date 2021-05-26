@@ -48,3 +48,13 @@ export const arraysAreEqual = (array1, array2) => {
   }       
   return true;
 }
+
+export const clickedInside = (e, arrayOfClassNames) => {
+  for (let i = 0; i < arrayOfClassNames.length; i++) {
+    const className = arrayOfClassNames[i];
+    if (e.target.closest(`[class*=${className}] *`)) {
+      return true;
+    }
+  }
+  return false;
+}

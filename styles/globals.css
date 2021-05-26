@@ -69,3 +69,11 @@ button.btn {
   padding: 0 1rem;
   color: #fff;
 }
+.collisionPoint {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: red;
+  cursor: pointer;
+  z-index: 99999;
+}
