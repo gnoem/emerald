@@ -4,7 +4,7 @@ import { getOrientation } from "../../utils";
 import Avatar from "../Avatar";
 import styles from "./user.module.css";
 
-const User = React.forwardRef(({ socketId, scene, userInstances, userData, isPlayer, viewUserCard }, ref) => {
+const User = React.forwardRef(({ socketId, scene, room, userInstances, userData, isPlayer, viewUserCard }, ref) => {
   const { position, orientation: givenOrientation = 'S', outfit, message, timestamp } = userData;
   const [orientation, setOrientation] = useState(null);
   const [isMoving, setIsMoving] = useState(false);
@@ -13,8 +13,16 @@ const User = React.forwardRef(({ socketId, scene, userInstances, userData, isPla
   const element = userInstances[socketId];
   useEffect(() => setOrientation(givenOrientation), [givenOrientation]);
   useEffect(() => {
+    setIsMoving(false);
+    setOrientation('S');
+    clearTimeout(transitionTimeout);
+  }, [room]);
+  useEffect(() => {
     if (!position || !element || !scene) return;
-    const actuallyMoved = (prevPosition?.x !== position.x) || (prevPosition?.y !== position.y);
+    const actuallyMoved = (() => {
+      if (position.spawn) return false;
+      return (prevPosition?.x !== position.x) || (prevPosition?.y !== position.y);
+    })();
     // prevX and prevY are the user's coords AT TIME OF CLICK, including mid-translation (so not the same as prevPosition)
     const { top, left } = element.getBoundingClientRect();
     const { prevX, prevY } = {
@@ -24,7 +32,7 @@ const User = React.forwardRef(({ socketId, scene, userInstances, userData, isPla
     const { x, y } = position;
     if ((prevX === x) && (prevY === y)) return;
     const getDuration = () => {
-      if (!actuallyMoved) return null;
+      if (!actuallyMoved) return 0;
       const [diffX, diffY] = [Math.abs(prevX - x), Math.abs(prevY - y)];
       const distance = Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffY, 2));
       const speed = 40; // px per second
@@ -42,7 +50,6 @@ const User = React.forwardRef(({ socketId, scene, userInstances, userData, isPla
         setIsMoving(false);
       }, getDuration() * 1000));
     }
-    //console.dir(`user ${socketId.slice(0, 5)} is moving ${orientation} from (${prevX}, ${prevY}) to (${position.x}, ${position.y})`);
   }, [prevPosition, position, element, scene]);
   useEffect(() => {
     if (!element) return;

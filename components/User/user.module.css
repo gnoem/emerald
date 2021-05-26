@@ -25,7 +25,7 @@
   position: relative;
   overflow: visible;
 }
-.userAvatar > svg path {
+.userAvatar > svg * {
   cursor: pointer;
 }
 .userAvatar::before {

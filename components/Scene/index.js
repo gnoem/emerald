@@ -36,10 +36,7 @@ const Scene = React.forwardRef(({ children, room, socket, userList, userInstance
 });
 
 const Canvas = React.forwardRef(({ children, socket, room, view, userList, userInstances, playerId }, ref) => {
-  const { mapObjects, updateMapObjects } = useContext(MapContext);
-  useEffect(() => {
-    console.log(mapObjects);
-  }, [room]);
+  const { mapObjects } = useContext(MapContext);
   useEffect(() => {
     if (!ref.current || !playerId || !socket) return;
     const moveUser = (e) => {
@@ -94,11 +91,20 @@ const Canvas = React.forwardRef(({ children, socket, room, view, userList, userI
               }
               const s = (-boundary.y * (p0.x - position.x) + boundary.x * (p0.y - position.y)) / (-path.x * boundary.y + boundary.x * path.y);
               const t = (path.x * (p0.y - position.y) - path.y * (p0.x - position.x)) / (-path.x * boundary.y + boundary.x * path.y);
+              const getPadding = () => { // this is to prevent getting "stuck" on the boundary line
+                const direction = boundaryName.split('-')[1];
+                switch (direction) {
+                  case 'N': return { x: 0, y: -1 };
+                  case 'E': return { x: 1, y: 0 };
+                  case 'S': return { x: 0, y: 1 };
+                  case 'W': return { x: -1, y: 0 };
+                }
+              }
               if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
                 return { // point of intersection
                   boundaryName,
-                  x: p0.x + (t * boundary.x),
-                  y: p0.y + (t * boundary.y)
+                  x: p0.x + (t * boundary.x) + getPadding().x,
+                  y: p0.y + (t * boundary.y) + getPadding().y
                 }
               }
               return null;
@@ -128,6 +134,7 @@ const Canvas = React.forwardRef(({ children, socket, room, view, userList, userI
             })
             return closestPoint;
           }
+          showCollisionPoints();
           return closestCollisionPoint();
         }
         if (collisionPoint()) {

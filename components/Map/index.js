@@ -37,11 +37,11 @@ const Object = ({ name, preventCollision }) => {
     townhall: [70, 300],
     mossyhouse: [170, 60],
     wishingwell: [250, 350],
-    witchshack: [250, 350]
+    witchshack: [50, 351]
   }
   useEffect(() => {
-    if (!config[name]) return;
-    setZIndex(config[name][0] + objectRef.current?.scrollHeight);
+    if (!config[name] || !objectRef.current) return;
+    setZIndex(config[name][0] + objectRef.current.scrollHeight);
   }, [name, objectRef.current]);
   const createReference = (element) => {
     if (preventCollision) mapObjects[name] = element; // or define a collision zone?

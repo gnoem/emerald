@@ -7,4 +7,5 @@
 .Map img {
   position: absolute;
   transform: scale(1.3);
+  /* background: rgba(255, 0, 255, 0.2); */
 }

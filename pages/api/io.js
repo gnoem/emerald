@@ -10,13 +10,15 @@ const ioHandler = (req, res) => {
     console.log('Starting socket.io');
     const io = new Server(res.socket.server);
     io.on('connection', (socket) => {
+      const getRandomPosition = () => ({
+        x: randomIntBetween(150, 550),
+        y: randomIntBetween(150, 350),
+        spawn: true
+      });
       users[socket.id] = {
         //displayName,
         room: randomFromArray(roomNames),
-        position: { // todo better: needs to be based on room where user spawns
-          x: randomIntBetween(150, 550),
-          y: randomIntBetween(150, 350)
-        },
+        position: getRandomPosition(), // todo better: needs to be based on room where user spawns
         outfit: {
           color: randomFromArray(Object.keys(colorMap)),
           face: 'eyes1'
@@ -41,10 +43,10 @@ const ioHandler = (req, res) => {
         });
       });
       socket.on('a user switched rooms', ({ socketId, room }) => {
-        console.dir(room);
         const data = {
           ...users[socketId],
-          room
+          room,
+          position: getRandomPosition()
         }
         users[socketId] = data;
         io.sockets.emit('a user switched rooms', {

@@ -20,20 +20,23 @@ const Game = () => {
       const isPlayer = socketId === playerId;
       const viewUserCard = () => setView({ user: socketId });
       return (
-        <User
-          key={socketId}
-          ref={(el) => userInstances[socketId] = el}
-          {...{ socketId, scene: sceneRef.current, userInstances, userData, isPlayer, viewUserCard }}
-        />
+        <User {...{
+          key: socketId,
+          ref: (el) => userInstances[socketId] = el,
+          socketId, 
+          scene: sceneRef.current,
+          room: userList[playerId].room,
+          userInstances,
+          userData,
+          isPlayer,
+          viewUserCard
+        }} />
       );
     });
     setUsersInRoom(users);
   }, [sceneRef.current, userList]);
   if (!playerId) return null;
   if (!Object.keys(userList).length) return null;
-  console.dir(userList);
-  console.dir(playerId);
-  console.dir(userList[playerId]);
   return (
     <Scene ref={sceneRef} {...{ room: userList[playerId].room, socket, userList, userInstances, view, updateView: setView, playerId }}>
       {usersInRoom}
