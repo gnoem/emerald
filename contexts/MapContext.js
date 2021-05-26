@@ -3,9 +3,9 @@ import React, { useRef } from "react";
 export const MapContext = React.createContext();
 
 const MapContextProvider = ({ children }) => {
-  const mapObjects = useRef({});
+  const collisionZones = useRef({});
   const contextValue = {
-    mapObjects: mapObjects.current
+    collisionZones: collisionZones.current
   }
   return (
     <MapContext.Provider value={contextValue}>

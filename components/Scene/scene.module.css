@@ -35,4 +35,5 @@
   height: 5px;
   background: red;
   cursor: pointer;
+  z-index: 99999;
 }

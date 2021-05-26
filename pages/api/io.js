@@ -1,6 +1,6 @@
 import { Server } from "socket.io";
 import { colorMap } from "../../components/Avatar";
-import { roomNames } from "../../config/rooms";
+import { rooms } from "../../config";
 import { randomFromArray, randomIntBetween } from "../../utils";
 
 const users = {};
@@ -17,7 +17,7 @@ const ioHandler = (req, res) => {
       });
       users[socket.id] = {
         //displayName,
-        room: randomFromArray(roomNames),
+        room: randomFromArray(Object.keys(rooms)),
         position: getRandomPosition(), // todo better: needs to be based on room where user spawns
         outfit: {
           color: randomFromArray(Object.keys(colorMap)),

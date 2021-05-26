@@ -1,16 +1,16 @@
 import React, { useContext, useEffect } from "react";
-import { roomNames } from "../../config/rooms";
+import { rooms } from "../../config";
 import { MapContext, MapContextProvider } from "../../contexts";
 import { getDistanceBetween, getOrientation } from "../../utils";
 import Chat from "../Chat";
+import Map from "../Map";
 import Title from "../Title";
 import UserCard from "../UserCard";
-import loadMap from "./loadMap";
 
 import styles from "./scene.module.css";
 
 const Scene = React.forwardRef(({ children, room, socket, userList, userInstances, playerId, view, updateView }, ref) => {
-  const switchRooms = roomNames.map(roomName => {
+  const switchRooms = Object.keys(rooms).map(roomName => {
     if (roomName === room) return null;
     const switchToRoom = () => {
       socket.emit('a user switched rooms', {
@@ -36,12 +36,13 @@ const Scene = React.forwardRef(({ children, room, socket, userList, userInstance
 });
 
 const Canvas = React.forwardRef(({ children, socket, room, view, userList, userInstances, playerId }, ref) => {
-  const { mapObjects } = useContext(MapContext);
+  const { collisionZones } = useContext(MapContext);
   useEffect(() => {
     if (!ref.current || !playerId || !socket) return;
     const moveUser = (e) => {
       if (Object.entries(view).length) return;
       if (e.target.closest('[class*=Chat] *')) return;
+      if (e.target.closest('button')) return;
       if (e.target.closest('[class*=User] *')) return;
       if (e.target.closest('[class*=UserCard] *')) return;
       const { clientX, clientY } = e;
@@ -63,7 +64,7 @@ const Canvas = React.forwardRef(({ children, socket, room, view, userList, userI
         const collisionPoint = () => { // will return { x, y } coordinates if collision
           // loop through solid objects - for each, get top, left, right, bottom;
           // get 4 lines, N boundary, E boundary, S boundary, W boundary and determine a Forbidden Range for each
-          const objectBoundaries = Object.entries(mapObjects).map(([name, element]) => {
+          const objectBoundaries = Object.entries(collisionZones).map(([name, element]) => {
             if (!element) return null;
             let { top: originalTop, bottom: originalBottom, left: originalLeft, right: originalRight } = element.getBoundingClientRect();
             const [width, height] = [originalRight - originalLeft, originalBottom - originalTop];
@@ -134,7 +135,7 @@ const Canvas = React.forwardRef(({ children, socket, room, view, userList, userI
             })
             return closestPoint;
           }
-          showCollisionPoints();
+          //showCollisionPoints();
           return closestCollisionPoint();
         }
         if (collisionPoint()) {
@@ -151,10 +152,10 @@ const Canvas = React.forwardRef(({ children, socket, room, view, userList, userI
     }
     ref.current.addEventListener('click', moveUser);
     return () => ref.current?.removeEventListener('click', moveUser);
-  }, [socket, view, userList, playerId, mapObjects, ref.current]);
+  }, [socket, view, userList, playerId, collisionZones, ref.current]);
   return (
     <div className={`${styles.Canvas} ${(view.user && !view.selfDestruct) ? styles.dim : ''}`} ref={ref}>
-      {loadMap[room]}
+      <Map room={room} />
       {children}
     </div>
   );
