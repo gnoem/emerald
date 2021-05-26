@@ -1,11 +1,8 @@
 const rooms = {
   plaza: {},
-  plaza: {},
-  plaza: {},
-  /* downtown: {},
-  bazaar: {}, */
-  swamp: {},
-  plaza: {},
+  swamp: {}
 }
+
+export const roomNames = ['plaza', 'swamp'];
 
 export default rooms;

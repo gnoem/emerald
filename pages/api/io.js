@@ -1,6 +1,6 @@
 import { Server } from "socket.io";
 import { colorMap } from "../../components/Avatar";
-import { rooms } from "../../config";
+import { roomNames } from "../../config/rooms";
 import { randomFromArray, randomIntBetween } from "../../utils";
 
 const users = {};
@@ -12,7 +12,7 @@ const ioHandler = (req, res) => {
     io.on('connection', (socket) => {
       users[socket.id] = {
         //displayName,
-        room: 'plaza', //randomFromArray(Object.keys(rooms)),
+        room: randomFromArray(roomNames),
         position: { // todo better: needs to be based on room where user spawns
           x: randomIntBetween(150, 550),
           y: randomIntBetween(150, 350)
@@ -37,6 +37,17 @@ const ioHandler = (req, res) => {
         }
         users[socketId] = data;
         io.sockets.emit('a user moved', {
+          [socketId]: data
+        });
+      });
+      socket.on('a user switched rooms', ({ socketId, room }) => {
+        console.dir(room);
+        const data = {
+          ...users[socketId],
+          room
+        }
+        users[socketId] = data;
+        io.sockets.emit('a user switched rooms', {
           [socketId]: data
         });
       });

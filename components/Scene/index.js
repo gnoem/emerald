@@ -1,4 +1,5 @@
 import React, { useContext, useEffect } from "react";
+import { roomNames } from "../../config/rooms";
 import { MapContext, MapContextProvider } from "../../contexts";
 import { getDistanceBetween, getOrientation } from "../../utils";
 import Chat from "../Chat";
@@ -9,12 +10,22 @@ import loadMap from "./loadMap";
 import styles from "./scene.module.css";
 
 const Scene = React.forwardRef(({ children, room, socket, userList, userInstances, playerId, view, updateView }, ref) => {
+  const switchRooms = roomNames.map(roomName => {
+    if (roomName === room) return null;
+    const switchToRoom = () => {
+      socket.emit('a user switched rooms', {
+        socketId: playerId,
+        room: roomName
+      });
+    }
+    return <button onClick={switchToRoom}>{roomName}</button>;
+  });
   return (
     <div className={styles.Scene}>
       <Title />
+      {switchRooms}
       <MapContextProvider>
-        <Canvas {...{ socket, view, userList, userInstances, playerId, ref }}>
-          {loadMap[room]}
+        <Canvas {...{ socket, room, view, userList, userInstances, playerId, ref }}>
           {children}
         </Canvas>
       </MapContextProvider>
@@ -24,8 +35,11 @@ const Scene = React.forwardRef(({ children, room, socket, userList, userInstance
   );
 });
 
-const Canvas = React.forwardRef(({ children, socket, view, userList, userInstances, playerId }, ref) => {
-  const { mapObjects } = useContext(MapContext);
+const Canvas = React.forwardRef(({ children, socket, room, view, userList, userInstances, playerId }, ref) => {
+  const { mapObjects, updateMapObjects } = useContext(MapContext);
+  useEffect(() => {
+    console.log(mapObjects);
+  }, [room]);
   useEffect(() => {
     if (!ref.current || !playerId || !socket) return;
     const moveUser = (e) => {
@@ -34,7 +48,7 @@ const Canvas = React.forwardRef(({ children, socket, view, userList, userInstanc
       if (e.target.closest('[class*=User] *')) return;
       if (e.target.closest('[class*=UserCard] *')) return;
       const { clientX, clientY } = e;
-      const { left: canvasLeft, top: canvasTop, right: canvasRight, bottom: canvasBottom } = ref.current.getBoundingClientRect();
+      const { left: canvasLeft, top: canvasTop } = ref.current.getBoundingClientRect();
       let position = {
         x: (clientX - canvasLeft),
         y: (clientY - canvasTop)
@@ -53,6 +67,7 @@ const Canvas = React.forwardRef(({ children, socket, view, userList, userInstanc
           // loop through solid objects - for each, get top, left, right, bottom;
           // get 4 lines, N boundary, E boundary, S boundary, W boundary and determine a Forbidden Range for each
           const objectBoundaries = Object.entries(mapObjects).map(([name, element]) => {
+            if (!element) return null;
             let { top: originalTop, bottom: originalBottom, left: originalLeft, right: originalRight } = element.getBoundingClientRect();
             const [width, height] = [originalRight - originalLeft, originalBottom - originalTop];
             const top = originalTop - canvasTop;
@@ -65,7 +80,7 @@ const Canvas = React.forwardRef(({ children, socket, view, userList, userInstanc
               [`${name}-S`]: [{ x: right, y: bottom }, { x: left, y: bottom }],
               [`${name}-W`]: [{ x: left, y: bottom }, { x: left, y: top }]
             }
-          });
+          }).filter(el => el);
           const collisionPoints = Object.values(objectBoundaries).map(boundaries => {
             return Object.entries(boundaries).map(([boundaryName, points]) => {
               const [p1, p0] = points;
@@ -129,9 +144,10 @@ const Canvas = React.forwardRef(({ children, socket, view, userList, userInstanc
     }
     ref.current.addEventListener('click', moveUser);
     return () => ref.current?.removeEventListener('click', moveUser);
-  }, [socket, view, userList, playerId, ref.current]);
+  }, [socket, view, userList, playerId, mapObjects, ref.current]);
   return (
     <div className={`${styles.Canvas} ${(view.user && !view.selfDestruct) ? styles.dim : ''}`} ref={ref}>
+      {loadMap[room]}
       {children}
     </div>
   );

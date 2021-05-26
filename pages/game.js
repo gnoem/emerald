@@ -15,7 +15,7 @@ const Game = () => {
     const usersInSameRoom = Object.keys(userList).filter(socketId => {
       return userList[socketId]?.room === userList[playerId].room;
     });
-    const users = Object.keys(userList).map(socketId => {
+    const users = usersInSameRoom.map(socketId => {
       const userData = userList[socketId];
       const isPlayer = socketId === playerId;
       const viewUserCard = () => setView({ user: socketId });
@@ -29,7 +29,11 @@ const Game = () => {
     });
     setUsersInRoom(users);
   }, [sceneRef.current, userList]);
+  if (!playerId) return null;
   if (!Object.keys(userList).length) return null;
+  console.dir(userList);
+  console.dir(playerId);
+  console.dir(userList[playerId]);
   return (
     <Scene ref={sceneRef} {...{ room: userList[playerId].room, socket, userList, userInstances, view, updateView: setView, playerId }}>
       {usersInRoom}
