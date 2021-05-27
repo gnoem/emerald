@@ -1,38 +1,51 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { rooms } from "../../config";
 import { MapContext } from "../../contexts";
 import { arraysAreEqual } from "../../utils";
 import styles from "./map.module.css";
 
-const Map = ({ children, room, objectsRef, clearObjectsRef }) => { // objectsRef should be array of elements
-  const [ready, setReady] = useState(false);
+const Map = ({ children, room, updateIsReady, objectsRef, updateObjectsRef, clearObjectsRef }) => { // objectsRef should be array of elements
+  const [loadObjects, setLoadObjects] = useState(false);
   const { setCollisionZones } = useContext(MapContext);
   const objectsList = rooms[room]?.objects;
   const mapObjects = objectsList.map(obj => {
     return <MapObject {...{
       key: obj,
-      name: obj
+      name: obj,
+      objectsRef,
+      updateObjectsRef
     }} />;
   });
   useEffect(() => {
+    setLoadObjects(false);
+    updateIsReady(false);
     clearObjectsRef();
     setCollisionZones({});
-    setReady(true);
   }, [room]);
   useEffect(() => {
-    const loadedObjects = Object.keys(objectsRef);
-    if (arraysAreEqual(objectsList, loadedObjects)) {
-      //setMapIsLoaded(true);
-      // NOW user can spawn
+    if (Object.keys(objectsRef).length === 0) { // triggered by room change useEffect
+      setLoadObjects(true); // objectsRef has been cleared and is ready to receive objects for this room
     }
-  }, [Object.keys(objectsRef)]);
+  }, [Object.keys(objectsRef).length]);
+  useEffect(() => {
+    const loadedObjectNames = Object.keys(objectsRef);
+    const loadedObjects = Object.values(objectsRef);
+    if (arraysAreEqual(objectsList, loadedObjectNames)) {
+      // not ready until null values have been replaced with elements:
+      if (loadedObjects.every(el => el)) { // herbie fully loaded
+        console.log('herbie fully loaded');
+        updateIsReady(true);
+        // NOW user can spawn!!!!!!
+      }
+    }
+  }, [objectsRef]);
   if (!objectsList) {
     console.warn(`room "${room}" not configured!`);
     return null;
   }
   return (
     <div className={styles.Map}>
-      {ready && mapObjects}
+      {loadObjects && mapObjects}
       {children}
     </div>
   );
@@ -45,10 +58,14 @@ const mapObjectConfig = {
   witchshack: [50, 351, 0.2]
 }
 
-const MapObject = ({ name }) => {
+const MapObject = ({ name, objectsRef, updateObjectsRef }) => {
   const [rect, setRect] = useState(null);
   const [zIndex, setZIndex] = useState(-1);
   const objectRef = useRef(null);
+  const handleLoad = () => {
+    setRect(objectRef.current?.getBoundingClientRect());
+    if (!objectsRef[name]) updateObjectsRef(name, objectRef.current);
+  }
   useEffect(() => {
     if (!mapObjectConfig[name] || !rect) return;
     setZIndex(Math.round(mapObjectConfig[name][0] + rect.height - 12)); // 12 is approx half of avatar height but maybe todo better
@@ -60,7 +77,7 @@ const MapObject = ({ name }) => {
         top: `${mapObjectConfig[name][0]}px`,
         left: `${mapObjectConfig[name][1]}px`,
         zIndex: `${zIndex}`
-      }} ref={objectRef} onLoad={() => setRect(objectRef.current?.getBoundingClientRect())} />
+      }} ref={objectRef} onLoad={handleLoad} />
       {rect?.height && <CollisionZone {...{ name, object: objectRef.current, rect }} />}
     </>
   );

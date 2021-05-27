@@ -1,4 +1,4 @@
-import { clickedInside, getDistanceBetween, getOrientation } from "../../utils";
+import { clickedInside, getDistanceBetween, getOrientation, randomIntBetween } from "../../utils";
 
 export const moveUser = (e, { socket, playerId, view, userInstances, ref, collisionZones }) => {
   if (Object.entries(view).length) return;
@@ -112,4 +112,43 @@ const getCollisionPoint = (collisionZones, { prevPosition, position }, canvas) =
   // or maybe in the collision zone definition, set "wiggle room" property/closeness threshold for each corner (NW, NE, SE, SW)
   // showCollisionPoints();
   return closestCollisionPoint();
+}
+
+export const getSpawnPosition = (canvas, objectsRef) => {
+  // generate x, y roughly in the center of the canvas
+  const { width, height } = canvas.getBoundingClientRect();
+  const radius = 50;
+  const xRange = [(0.5 * width) - radius, (0.5 * width) + radius];
+  const yRange = [(0.5 * height) - radius, (0.5 * height) + radius];
+  // generate a set of Forbidden Ranges from objectsRef elements
+  const forbiddenRanges = Object.values(objectsRef).map(element => {
+    const { top, left } = element.style;
+    const [objectTop, objectLeft] = [parseInt(top), parseInt(left)];
+    const { width: objectWidth, height: objectHeight } = element.getBoundingClientRect();
+    console.log(`(${objectLeft}, ${objectTop}): ${objectWidth} by ${objectHeight}`);
+    return {
+      top: objectTop,
+      bottom: objectTop + objectHeight,
+      left: objectLeft,
+      right: objectLeft + objectWidth
+    }
+  });
+  const tryPosition = () => ({
+    x: randomIntBetween(xRange[0], xRange[1]),
+    y: randomIntBetween(yRange[0], yRange[1]),
+    spawn: true
+  });
+  let randomPosition = tryPosition();
+  // check generated x, y against each object in forbiddenRanges
+  const spawnIsAllowed = (position) => {
+    for (let i = 0; i < forbiddenRanges.length; i++) {
+      const { top, bottom, left, right } = forbiddenRanges[i];
+      if ((position.x > left) && (position.x < right) && (position.y > top) && (position.y < bottom)) return false;
+    }
+    return true;
+  }
+  while (!spawnIsAllowed(randomPosition)) {
+    randomPosition = tryPosition();
+  }
+  return randomPosition;
 }

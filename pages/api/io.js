@@ -1,24 +1,18 @@
 import { Server } from "socket.io";
 import { colorMap } from "../../components/Avatar";
 import { rooms } from "../../config";
-import { randomFromArray, randomIntBetween } from "../../utils";
+import { randomFromArray } from "../../utils";
 
 const users = {};
 
-const ioHandler = (req, res) => {
+const ioHandler = (_, res) => {
   if (!res.socket.server.io) {
     console.log('Starting socket.io');
     const io = new Server(res.socket.server);
     io.on('connection', (socket) => {
-      const getRandomPosition = () => ({
-        x: randomIntBetween(150, 550),
-        y: randomIntBetween(150, 350),
-        spawn: true
-      });
       users[socket.id] = {
-        //displayName,
+        // displayName,
         room: randomFromArray(Object.keys(rooms)),
-        position: getRandomPosition(), // todo better: needs to be based on room where user spawns
         outfit: {
           color: randomFromArray(Object.keys(colorMap)),
           face: 'eyes1'
@@ -26,6 +20,8 @@ const ioHandler = (req, res) => {
       }
       socket.on('hello', () => {
         socket.emit('hello', {
+          // send new connection their socketId and info (so far just room + outfit)
+          // spawn location will depend on the room map
           id: socket.id,
           users
         });
@@ -45,8 +41,7 @@ const ioHandler = (req, res) => {
       socket.on('a user switched rooms', ({ socketId, room }) => {
         const data = {
           ...users[socketId],
-          room,
-          position: getRandomPosition()
+          room
         }
         users[socketId] = data;
         io.sockets.emit('a user switched rooms', {

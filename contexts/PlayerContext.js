@@ -19,7 +19,7 @@ const PlayerContextProvider = ({ children }) => {
         setPlayerId(id);
         setUserList(users);
       });
-      socket.on('a user connected', (users) => setUserList(users));
+      socket.on('a user connected', setUserList);
       const handleUserUpdate = (user) => {
         const [socketId, data] = Object.entries(user)[0];
         setUserList(prevUsers => {
