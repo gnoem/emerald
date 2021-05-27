@@ -107,6 +107,9 @@ const getCollisionPoint = (collisionZones, { prevPosition, position }, canvas) =
     })
     return closestPoint;
   }
+  // todo also!!!! if the closest 2 collision points are sufficiently close together, set position to the 3rd collision point if there is one or to the original target
+  // that way the user's path won't be interrupted by the corner of a collision zone where it would be more natural to just go through it
+  // or maybe in the collision zone definition, set "wiggle room" property/closeness threshold for each corner (NW, NE, SE, SW)
   // showCollisionPoints();
   return closestCollisionPoint();
 }

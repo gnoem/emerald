@@ -1,8 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import io from "socket.io-client";
 import { UsersContext } from ".";
-import { rooms } from "../config";
-import { randomFromArray } from "../utils";
 
 export const PlayerContext = React.createContext();
 
