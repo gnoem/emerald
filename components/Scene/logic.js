@@ -1,6 +1,7 @@
+import { rooms } from "../../config";
 import { clickedInside, getDistanceBetween, getOrientation, randomIntBetween } from "../../utils";
 
-export const moveUser = (e, { socket, playerId, view, userInstances, ref, collisionZones }) => {
+export const moveUser = (e, { socket, playerId, room, view, userInstances, ref, collisionZones, portalZones }) => {
   if (Object.entries(view).length) return;
   if (clickedInside(e, ['Chat', 'User', 'UserCard'])) return;
   const { clientX, clientY } = e;
@@ -25,6 +26,13 @@ export const moveUser = (e, { socket, playerId, view, userInstances, ref, collis
     }
   }
   preventCollision();
+  const checkPortal = () => {
+    const clickedInsidePortal = getPortalClick(room, portalZones, { position }, canvas);
+    if (clickedInsidePortal) {
+      position.portal = clickedInsidePortal;
+    }
+  }
+  checkPortal();
   socket.emit('a user moved', {
     socketId: playerId,
     position,
@@ -32,18 +40,29 @@ export const moveUser = (e, { socket, playerId, view, userInstances, ref, collis
   });
 }
 
-const getCollisionPoint = (collisionZones, { prevPosition, position }, canvas) => { // will return { x, y } coordinates if collision
+const getBoundaryRelativeToCanvas = (canvas, element) => {
+  if (!element || !canvas) return null;
   const canvasRect = canvas.getBoundingClientRect();
+  let { top: originalTop, bottom: originalBottom, left: originalLeft, right: originalRight } = element.getBoundingClientRect();
+  const [width, height] = [originalRight - originalLeft, originalBottom - originalTop];
+  const top = originalTop - canvasRect.top;
+  const bottom = top + height;
+  const left = originalLeft - canvasRect.left;
+  const right = left + width;
+  return {
+    top,
+    bottom,
+    left,
+    right
+  }
+}
+
+const getCollisionPoint = (collisionZones, { prevPosition, position }, canvas) => { // will return { x, y } coordinates if collision
   // loop through all collision zones - for each, get top, left, right, bottom;
   // get 4 lines segments: N boundary, E boundary, S boundary, W boundary
   const objectBoundaries = Object.entries(collisionZones).map(([name, element]) => {
     if (!element) return null;
-    let { top: originalTop, bottom: originalBottom, left: originalLeft, right: originalRight } = element.getBoundingClientRect();
-    const [width, height] = [originalRight - originalLeft, originalBottom - originalTop];
-    const top = originalTop - canvasRect.top;
-    const bottom = top + height;
-    const left = originalLeft - canvasRect.left;
-    const right = left + width;
+    const { top, bottom, left, right } = getBoundaryRelativeToCanvas(canvas, element);
     return {
       [`${name}-N`]: [{ x: left, y: top }, { x: right, y: top }],
       [`${name}-E`]: [{ x: right, y: top }, { x: right, y: bottom }],
@@ -104,7 +123,7 @@ const getCollisionPoint = (collisionZones, { prevPosition, position }, canvas) =
     const shortestDistance = distances[0];
     const closestPoint = collisionPoints.find(point => {
       return getDistanceBetween(prevPosition.x, prevPosition.y, point.x, point.y) === shortestDistance;
-    })
+    });
     return closestPoint;
   }
   // todo also!!!! if the closest 2 collision points are sufficiently close together, set position to the 3rd collision point if there is one or to the original target
@@ -112,6 +131,66 @@ const getCollisionPoint = (collisionZones, { prevPosition, position }, canvas) =
   // or maybe in the collision zone definition, set "wiggle room" property/closeness threshold for each corner (NW, NE, SE, SW)
   // showCollisionPoints();
   return closestCollisionPoint();
+}
+
+const getPortalClick = (currentRoom, portalZones, { position }, canvas) => {
+  const portalBoundaries = Object.entries(portalZones).map(([name, element]) => {
+    if (!element) return null;
+    return {
+      name,
+      ...getBoundaryRelativeToCanvas(canvas, element)
+    }
+  }).filter(el => el);
+  const clickedInsidePortal = () => {
+    return portalBoundaries.map(boundaryDef => {
+      const { name, top, bottom, left, right } = boundaryDef;
+      const clickedInside = (position.x > left) && (position.x < right) && (position.y > top) && (position.y < bottom);
+      if (clickedInside) {
+        const arrivalZone = rooms[name].portals.find(portal => portal.to === currentRoom);
+        const getArrivalBoundaries = ({ top, bottom, left, right, size }) => {
+          const [width, height] = size;
+          let boundaryTop, boundaryBottom, boundaryLeft, boundaryRight;
+          if (left != null) {
+            boundaryLeft = left;
+            boundaryRight = left + width;
+          } else if (right != null) { // right must be defined
+            boundaryLeft = canvas.getBoundingClientRect().width - width;
+            boundaryRight = canvas.getBoundingClientRect().width;
+          }
+          if (top != null) {
+            boundaryTop = top;
+            boundaryBottom = top + height;
+          } else if (bottom != null) {
+            boundaryTop = canvas.getBoundingClientRect().height - height;
+            boundaryBottom = canvas.getBoundingClientRect().height;
+          }
+          return { boundaryTop, boundaryBottom, boundaryLeft, boundaryRight };
+        }
+        const { boundaryTop, boundaryBottom, boundaryLeft, boundaryRight } = getArrivalBoundaries(arrivalZone);
+        return {
+          portalName: name,
+          x: randomIntBetween(boundaryLeft, boundaryRight),
+          y: randomIntBetween(boundaryTop, boundaryBottom)
+          // ^^ todo better - should be the left boundary (NOT a range) if coming in from the right, top boundary if coming in from the bottom, etc
+          // to prevent accidentally clicking inside boundary and getting transported back
+        }
+      }
+      return null;
+    }).filter(el => el);
+  }
+  const clickedInside = clickedInsidePortal()[0];
+  if (clickedInside) {
+    const { portalName, x, y } = clickedInside;
+    return {
+      roomName: portalName,
+      spawnLocation: {
+        x,
+        y,
+        spawn: true
+      }
+    }
+  }
+  return null;
 }
 
 export const getSpawnPosition = (canvas, objectsRef) => {
@@ -125,7 +204,6 @@ export const getSpawnPosition = (canvas, objectsRef) => {
     const { top, left } = element.style;
     const [objectTop, objectLeft] = [parseInt(top), parseInt(left)];
     const { width: objectWidth, height: objectHeight } = element.getBoundingClientRect();
-    console.log(`(${objectLeft}, ${objectTop}): ${objectWidth} by ${objectHeight}`);
     return {
       top: objectTop,
       bottom: objectTop + objectHeight,

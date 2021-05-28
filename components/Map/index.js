@@ -4,10 +4,9 @@ import { MapContext } from "../../contexts";
 import { arraysAreEqual } from "../../utils";
 import styles from "./map.module.css";
 
-const Map = ({ children, room, updateIsReady, objectsRef, updateObjectsRef, clearObjectsRef }) => { // objectsRef should be array of elements
+const Map = ({ children, room, updateMapIsLoaded, objectsRef, updateObjectsRef }) => {
   const [loadObjects, setLoadObjects] = useState(false);
-  const { setCollisionZones } = useContext(MapContext);
-  const objectsList = rooms[room]?.objects;
+  const { objects: objectsList, portals: portalsList } = rooms[room];
   const mapObjects = objectsList.map(obj => {
     return <MapObject {...{
       key: obj,
@@ -16,11 +15,11 @@ const Map = ({ children, room, updateIsReady, objectsRef, updateObjectsRef, clea
       updateObjectsRef
     }} />;
   });
+  const mapPortals = portalsList.map(portal => (
+    <MapPortal {...{ room, portal }} />
+  ));
   useEffect(() => {
     setLoadObjects(false);
-    updateIsReady(false);
-    clearObjectsRef();
-    setCollisionZones({});
   }, [room]);
   useEffect(() => {
     if (Object.keys(objectsRef).length === 0) { // triggered by room change useEffect
@@ -34,7 +33,7 @@ const Map = ({ children, room, updateIsReady, objectsRef, updateObjectsRef, clea
       // not ready until null values have been replaced with elements:
       if (loadedObjects.every(el => el)) { // herbie fully loaded
         console.log('herbie fully loaded');
-        updateIsReady(true);
+        updateMapIsLoaded(true);
         // NOW user can spawn!!!!!!
       }
     }
@@ -46,6 +45,7 @@ const Map = ({ children, room, updateIsReady, objectsRef, updateObjectsRef, clea
   return (
     <div className={styles.Map}>
       {loadObjects && mapObjects}
+      {loadObjects && mapPortals}
       {children}
     </div>
   );
@@ -53,7 +53,7 @@ const Map = ({ children, room, updateIsReady, objectsRef, updateObjectsRef, clea
 
 const mapObjectConfig = {
   townhall: [70, 300, 0.3], // [top, left, collision zone height relative to object]
-  mossyhouse: [170, 60, 0.6],
+  mossyhouse: [100, 100, 0.6],
   wishingwell: [250, 350, 0.4],
   witchshack: [50, 351, 0.2]
 }
@@ -116,6 +116,35 @@ const CollisionZone = ({ name, object, rect }) => {
       width: `${width}px`,
       height: `${height}px`
     }} ref={collisionZoneRef} />
+  );
+}
+
+const MapPortal = ({ room, portal }) => {
+  const portalZoneRef = useRef(null);
+  const { setPortalZones } = useContext(MapContext);
+  useEffect(() => {
+    const element = portalZoneRef.current;
+    if (element) {
+      setPortalZones(prevZones => ({
+        ...prevZones,
+        [portal.to]: element
+      }));
+    }
+  }, [portalZoneRef.current]);
+  const getPortalStyle = useCallback(() => {
+    const { top, bottom, left, right, size } = portal;
+    const portalStyle = {
+      width: `${size[0]}px`,
+      height: `${size[1]}px`,
+    }
+    if (top != null) portalStyle.top = `${top}px`;
+    if (bottom != null) portalStyle.bottom = `${bottom}px`;
+    if (left != null) portalStyle.left = `${left}px`;
+    if (right != null) portalStyle.right = `${right}px`;
+    return portalStyle;
+  }, [portal]);
+  return (
+    <div className={styles.portal} style={getPortalStyle()} ref={portalZoneRef}></div>
   );
 }
 

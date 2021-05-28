@@ -17,18 +17,18 @@ const Game = () => {
     });
     const users = usersInSameRoom.map(socketId => {
       const userData = userList[socketId];
-      const isPlayer = socketId === playerId;
       const viewUserCard = () => setView({ user: socketId });
       return (
         <User {...{
           key: socketId,
           ref: (el) => userInstances[socketId] = el,
+          socket,
           socketId, 
+          playerId,
           scene: sceneRef.current,
           room: userList[playerId].room,
           userInstances,
           userData,
-          isPlayer,
           viewUserCard
         }} />
       );

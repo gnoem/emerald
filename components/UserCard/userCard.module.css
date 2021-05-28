@@ -1,7 +1,7 @@
 .UserCard {
   position: absolute;
   z-index: 9999;
-  bottom: 0.5rem;
+  bottom: 0;
   left: 50%;
   width: 500px;
   height: 87%;

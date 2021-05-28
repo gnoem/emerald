@@ -4,9 +4,12 @@ export const MapContext = React.createContext();
 
 const MapContextProvider = ({ children }) => {
   const [collisionZones, setCollisionZones] = useState({});
+  const [portalZones, setPortalZones] = useState({});
   const contextValue = {
     collisionZones,
-    setCollisionZones
+    setCollisionZones,
+    portalZones,
+    setPortalZones,
   }
   return (
     <MapContext.Provider value={contextValue}>

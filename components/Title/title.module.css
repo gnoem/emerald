@@ -6,8 +6,10 @@
   transform: translate3d(-50%, -70%, 0);
   white-space: nowrap;
   font-family: var(--header-font);
-  font-size: 5rem;
+  font-size: 7rem;
   line-height: 1;
   color: #fff;
   text-shadow: 0 0 1rem var(--dark-theme-color), 0 0 2rem var(--dark-theme-color);
+  user-select: none;
+  pointer-events: none;
 }

@@ -38,6 +38,17 @@ const ioHandler = (_, res) => {
           [socketId]: data
         });
       });
+      socket.on('a user spawned', ({ socketId, room }) => { // MAP ONLY
+        console.dir(`a user spawned in ${room}!`);
+        const data = {
+          ...users[socketId],
+          room
+        }
+        users[socketId] = data;
+        io.sockets.emit('a user spawned', {
+          [socketId]: data
+        });
+      });
       socket.on('a user switched rooms', ({ socketId, room }) => {
         const data = {
           ...users[socketId],

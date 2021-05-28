@@ -30,12 +30,12 @@ body::before, body::after {
   height: 100%;
 }
 body::after {
-  z-index: -1;
+  z-index: -999;
   background: linear-gradient(135deg, #5cdcff, #ff8cff);
   opacity: 0.5;
 }
 body::before {
-  z-index: -2;
+  z-index: -9999;
   background: url('http://static.colourlovers.com/images/patterns/4233/4233889.png');
   filter: hue-rotate(40deg);
 }

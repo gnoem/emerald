@@ -29,6 +29,7 @@ const PlayerContextProvider = ({ children }) => {
         });
       }
       socket.on('a user moved', handleUserUpdate);
+      socket.on('a user spawned', handleUserUpdate);
       socket.on('a user switched rooms', handleUserUpdate);
       socket.on('a user talked', handleUserUpdate);
       socket.on('a user changed their outfit', handleUserUpdate);

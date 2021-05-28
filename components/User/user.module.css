@@ -46,6 +46,9 @@ span.userLabel {
   padding: 0 0.5rem;
   user-select: none;
 }
+.User[data-hidden=true] {
+  visibility: hidden;
+}
 .User[data-self=true] .userAvatar::before {
   background: rgba(255, 255, 255, 0.1);
   border: 3px solid cyan;

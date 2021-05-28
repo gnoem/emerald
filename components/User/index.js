@@ -5,31 +5,58 @@ import Avatar from "../Avatar";
 import { handleMovement } from "./logic";
 import styles from "./user.module.css";
 
-const User = React.forwardRef(({ socketId, scene, room, userInstances, userData, isPlayer, viewUserCard }, ref) => {
+const User = React.forwardRef(({ socket, socketId, playerId, scene, room, userInstances, userData, viewUserCard }, ref) => {
+  const isPlayer = playerId === socketId;
   const { position, orientation: givenOrientation = 'S', outfit, message, timestamp } = userData;
+  const [elementStyle, setElementStyle] = useState(null);
   const [orientation, setOrientation] = useState(null);
   const [isMoving, setIsMoving] = useState(false);
-  const [transitionTimeout, setTransitionTimeout] = useState(null);
+  const [movementTimeout, setMovementTimeout] = useState(null);
+  const [portalTimeout, setPortalTimeout] = useState(null);
   const prevPosition = usePrevious(position);
   const element = userInstances[socketId];
   useEffect(() => setOrientation(givenOrientation), [givenOrientation]);
   useEffect(() => {
     setIsMoving(false);
     setOrientation('S');
-    clearTimeout(transitionTimeout);
+    clearTimeout(movementTimeout);
+    clearTimeout(portalTimeout);
+    console.log(`SWITCHED TO ROOM!!!!!!!!!!!!!!!!!!!!`);
   }, [room]);
   useEffect(() => {
-    if (!position || !element || !scene) return;
+    if (!position || !element || !scene) return console.log(`stopped short; position is ${!!position}; element is ${!!element}; scene is ${!!scene}`);
+    const didntMove = (prevPosition?.x === position.x) && (prevPosition?.y === position.y);
+    if (!prevPosition || didntMove) {
+      if (!elementStyle) {
+        console.log('setting element style directly');
+        setElementStyle({
+          transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
+          zIndex: `${Math.round(position.y)}`
+        });
+      }
+      return;
+    }
     const { actuallyMoved, elementProps, transitionDuration } = handleMovement(element, { prevPosition, position }, scene);
-    Object.assign(element.style, elementProps);
+    setElementStyle(elementProps);
     if (actuallyMoved) {
-      if (transitionTimeout) clearTimeout(transitionTimeout);
+      if (movementTimeout) clearTimeout(movementTimeout);
+      if (portalTimeout) clearTimeout(portalTimeout);
       setIsMoving(true);
-      setTransitionTimeout(setTimeout(() => {
+      setMovementTimeout(setTimeout(() => {
         setIsMoving(false);
       }, transitionDuration * 1000));
     }
-  }, [prevPosition, position, element, scene]);
+    if (position.portal) {
+      if (portalTimeout) clearTimeout(portalTimeout);
+      setPortalTimeout(setTimeout(() => {
+        socket.emit('a user switched rooms', {
+          socketId,
+          room: position.portal.roomName,
+          position: position.portal.spawnLocation
+        });
+      }, (transitionDuration * 1000) - 50));
+    }
+  }, [prevPosition, position, scene]);
   useEffect(() => {
     if (!element) return;
     const checkOrientation = (e) => {
@@ -49,6 +76,8 @@ const User = React.forwardRef(({ socketId, scene, room, userInstances, userData,
     <div
       className={styles.User}
       data-self={isPlayer}
+      style={elementStyle}
+      //data-hidden={isLoading}
       ref={ref}>
         {message && <span className={styles.userMessage} style={{ zIndex: timestamp }}>{message}</span>}
         <span className={styles.userAvatar} onClick={viewUserCard}>
