@@ -4,8 +4,7 @@ import { MapContext } from "../../contexts";
 import { arraysAreEqual } from "../../utils";
 import styles from "./map.module.css";
 
-const Map = ({ children, room, updateMapIsLoaded, objectsRef, updateObjectsRef }) => {
-  const [loadObjects, setLoadObjects] = useState(false);
+const Map = ({ children, room, updateMapIsLoaded, loadObjects, updateLoadObjects, objectsRef, updateObjectsRef }) => {
   const { objects: objectsList, portals: portalsList } = rooms[room];
   const mapObjects = objectsList.map(obj => {
     return <MapObject {...{
@@ -16,14 +15,11 @@ const Map = ({ children, room, updateMapIsLoaded, objectsRef, updateObjectsRef }
     }} />;
   });
   const mapPortals = portalsList.map(portal => (
-    <MapPortal {...{ room, portal }} />
+    <MapPortal key={`portal(${room} > ${portal.to})`} {...{ room, portal }} />
   ));
   useEffect(() => {
-    setLoadObjects(false);
-  }, [room]);
-  useEffect(() => {
     if (Object.keys(objectsRef).length === 0) { // triggered by room change useEffect
-      setLoadObjects(true); // objectsRef has been cleared and is ready to receive objects for this room
+      if (!loadObjects) updateLoadObjects(true); // objectsRef has been cleared and is ready to receive objects for this room
     }
   }, [Object.keys(objectsRef).length]);
   useEffect(() => {
@@ -52,10 +48,26 @@ const Map = ({ children, room, updateMapIsLoaded, objectsRef, updateObjectsRef }
 }
 
 const mapObjectConfig = {
-  townhall: [70, 300, 0.3], // [top, left, collision zone height relative to object]
-  mossyhouse: [100, 100, 0.6],
-  wishingwell: [250, 350, 0.4],
-  witchshack: [50, 351, 0.2]
+  townhall: {
+    coords: [70, 300, 0.3],
+    portal: {
+      to: 'townhall',
+      coords: [0.3, 0.3, 0.1, 0.1] // percentage [top, left, width, height] of object
+    }
+  }, // [top, left, collision zone height relative to object]
+  mossyhouse: {
+    coords: [100, 100, 0.6]
+  },
+  wishingwell: {
+    coords: [250, 350, 0.4]
+  },
+  witchshack: {
+    coords: [50, 351, 0.2],
+    portal: {
+      to: 'witchshack',
+      coords: [0.66, 0.18, 0.2, 0.4] // percentage [top, left, width, height] of object
+    }
+  }
 }
 
 const MapObject = ({ name, objectsRef, updateObjectsRef }) => {
@@ -67,18 +79,19 @@ const MapObject = ({ name, objectsRef, updateObjectsRef }) => {
     if (!objectsRef[name]) updateObjectsRef(name, objectRef.current);
   }
   useEffect(() => {
-    if (!mapObjectConfig[name] || !rect) return;
-    setZIndex(Math.round(mapObjectConfig[name][0] + rect.height - 12)); // 12 is approx half of avatar height but maybe todo better
+    if (!mapObjectConfig[name]?.coords || !rect) return;
+    setZIndex(Math.round(mapObjectConfig[name].coords[0] + rect.height - 12)); // 12 is approx half of avatar height but maybe todo better
   }, [rect]);
-  if (!mapObjectConfig[name]) return null;
+  if (!mapObjectConfig[name]?.coords) return null;
   return (
     <>
       <img src={`/assets/map/${name}.png`} style={{
-        top: `${mapObjectConfig[name][0]}px`,
-        left: `${mapObjectConfig[name][1]}px`,
+        top: `${mapObjectConfig[name].coords[0]}px`,
+        left: `${mapObjectConfig[name].coords[1]}px`,
         zIndex: `${zIndex}`
       }} ref={objectRef} onLoad={handleLoad} />
       {rect?.height && <CollisionZone {...{ name, object: objectRef.current, rect }} />}
+      {rect?.height && <ObjectPortal {...{ object: name, rect, portal: mapObjectConfig[name].portal }} />}
     </>
   );
 }
@@ -92,7 +105,7 @@ const CollisionZone = ({ name, object, rect }) => {
     const { width: objectWidth, height: objectHeight } = rect;
     objectTop = parseInt(objectTop);
     objectLeft = parseInt(objectLeft);
-    const heightFactor = mapObjectConfig[name][2];
+    const heightFactor = mapObjectConfig[name].coords[2];
     setRect({
       top: objectTop + (objectHeight * (1 - heightFactor)),
       left: objectLeft,
@@ -119,7 +132,19 @@ const CollisionZone = ({ name, object, rect }) => {
   );
 }
 
-const MapPortal = ({ room, portal }) => {
+const ObjectPortal = ({ object, rect, portal }) => {
+  const objectPortal = {
+    object,
+    rect,
+    ...portal
+  }
+  if (!portal) return null;
+  return (
+    <MapPortal {...{ portal: objectPortal }} isObjectPortal />
+  );
+}
+
+const MapPortal = ({ portal, isObjectPortal }) => {
   const portalZoneRef = useRef(null);
   const { setPortalZones } = useContext(MapContext);
   useEffect(() => {
@@ -132,19 +157,34 @@ const MapPortal = ({ room, portal }) => {
     }
   }, [portalZoneRef.current]);
   const getPortalStyle = useCallback(() => {
-    const { top, bottom, left, right, size } = portal;
-    const portalStyle = {
-      width: `${size[0]}px`,
-      height: `${size[1]}px`,
+    if (isObjectPortal) {
+      const objectName = portal.object;
+      const [top, left, width, height] = portal.coords;
+      const [objectTop, objectLeft] = mapObjectConfig[objectName].coords;
+      const { width: objectWidth, height: objectHeight } = portal.rect;
+      const portalStyle = {
+        top: `${objectTop + (top * objectHeight)}px`,
+        left: `${objectLeft + (left * objectWidth)}px`,
+        width: `${objectWidth * width}px`,
+        height: `${objectHeight * height}px`
+      }
+      return portalStyle;
+    } else {
+      const { top, bottom, left, right, size } = portal;
+      const portalStyle = {
+        width: `${size[0]}px`,
+        height: `${size[1]}px`,
+      }
+      if (top != null) portalStyle.top = `${top}px`;
+      if (bottom != null) portalStyle.bottom = `${bottom}px`;
+      if (left != null) portalStyle.left = `${left}px`;
+      if (right != null) portalStyle.right = `${right}px`;
+      return portalStyle;
     }
-    if (top != null) portalStyle.top = `${top}px`;
-    if (bottom != null) portalStyle.bottom = `${bottom}px`;
-    if (left != null) portalStyle.left = `${left}px`;
-    if (right != null) portalStyle.right = `${right}px`;
-    return portalStyle;
-  }, [portal]);
+  }, []);
+  if (!portal) return null;
   return (
-    <div className={styles.portal} style={getPortalStyle()} ref={portalZoneRef}></div>
+    <div className={`${styles.portal} ${isObjectPortal ? styles.isObjectPortal : ''}`} style={getPortalStyle()} ref={portalZoneRef}></div>
   );
 }
 

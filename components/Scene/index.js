@@ -39,6 +39,7 @@ const Scene = React.forwardRef(({ children, room, socket, userList, userInstance
 const Canvas = React.forwardRef(({ children, socket, room, view, userList, userInstances, playerId, mapIsLoaded, updateMapIsLoaded }, ref) => {
   const { portalZones, setPortalZones, collisionZones, setCollisionZones } = useContext(MapContext);
   const [objectsRef, setObjectsRef] = useState({});
+  const [loadObjects, setLoadObjects] = useState(false);
   const updateObjectsRef = (name, element) => {
     setObjectsRef(prevObjects => ({
       ...prevObjects,
@@ -50,6 +51,7 @@ const Canvas = React.forwardRef(({ children, socket, room, view, userList, userI
     setObjectsRef({});
     setCollisionZones({});
     setPortalZones({});
+    setLoadObjects(true);
   }, [room]);
   useEffect(() => {
     const { position } = userList[playerId];
@@ -74,6 +76,8 @@ const Canvas = React.forwardRef(({ children, socket, room, view, userList, userI
       <Map {...{
         room,
         updateMapIsLoaded,
+        loadObjects,
+        updateLoadObjects: setLoadObjects,
         objectsRef,
         updateObjectsRef
       }} />

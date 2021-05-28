@@ -147,7 +147,9 @@ const getPortalClick = (currentRoom, portalZones, { position }, canvas) => {
       const clickedInside = (position.x > left) && (position.x < right) && (position.y > top) && (position.y < bottom);
       if (clickedInside) {
         const arrivalZone = rooms[name].portals.find(portal => portal.to === currentRoom);
-        const getArrivalBoundaries = ({ top, bottom, left, right, size }) => {
+        const getArrivalBoundaries = (arrivalZone) => {
+          if (!arrivalZone) return {};
+          const { top, bottom, left, right, size } = arrivalZone;
           const [width, height] = size;
           let boundaryTop, boundaryBottom, boundaryLeft, boundaryRight;
           if (left != null) {
@@ -169,8 +171,8 @@ const getPortalClick = (currentRoom, portalZones, { position }, canvas) => {
         const { boundaryTop, boundaryBottom, boundaryLeft, boundaryRight } = getArrivalBoundaries(arrivalZone);
         return {
           portalName: name,
-          x: randomIntBetween(boundaryLeft, boundaryRight),
-          y: randomIntBetween(boundaryTop, boundaryBottom)
+          x: arrivalZone ? randomIntBetween(boundaryLeft, boundaryRight) : null,
+          y: arrivalZone ? randomIntBetween(boundaryTop, boundaryBottom) : null
           // ^^ todo better - should be the left boundary (NOT a range) if coming in from the right, top boundary if coming in from the bottom, etc
           // to prevent accidentally clicking inside boundary and getting transported back
         }
@@ -181,13 +183,12 @@ const getPortalClick = (currentRoom, portalZones, { position }, canvas) => {
   const clickedInside = clickedInsidePortal()[0];
   if (clickedInside) {
     const { portalName, x, y } = clickedInside;
+    const spawnLocation = (x != null && y != null)
+      ? { x, y, spawn: true }
+      : null;
     return {
       roomName: portalName,
-      spawnLocation: {
-        x,
-        y,
-        spawn: true
-      }
+      spawnLocation
     }
   }
   return null;

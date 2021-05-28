@@ -16,6 +16,24 @@ const rooms = {
       left: 0,
       size: [80, 200]
     }]
+  },
+  townhall: {
+    objects: [],
+    portals: [{
+      to: 'plaza',
+      bottom: 0,
+      right: 0,
+      size: [100, 100]
+    }]
+  },
+  witchshack: {
+    objects: [],
+    portals: [{
+      to: 'swamp',
+      bottom: 0,
+      left: 0,
+      size: [100, 100]
+    }]
   }
 }
 
