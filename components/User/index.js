@@ -21,14 +21,12 @@ const User = React.forwardRef(({ socket, socketId, playerId, scene, room, userIn
     setOrientation('S');
     clearTimeout(movementTimeout);
     clearTimeout(portalTimeout);
-    console.log(`SWITCHED TO ROOM!!!!!!!!!!!!!!!!!!!!`);
   }, [room]);
   useEffect(() => {
-    if (!position || !element || !scene) return console.log(`stopped short; position is ${!!position}; element is ${!!element}; scene is ${!!scene}`);
+    if (!position || !element || !scene) return;
     const didntMove = (prevPosition?.x === position.x) && (prevPosition?.y === position.y);
     if (!prevPosition || didntMove) {
       if (!elementStyle) {
-        console.log('setting element style directly');
         setElementStyle({
           transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
           zIndex: `${Math.round(position.y)}`
@@ -77,7 +75,6 @@ const User = React.forwardRef(({ socket, socketId, playerId, scene, room, userIn
       className={styles.User}
       data-self={isPlayer}
       style={elementStyle}
-      //data-hidden={isLoading}
       ref={ref}>
         {message && <span className={styles.userMessage} style={{ zIndex: timestamp }}>{message}</span>}
         <span className={styles.userAvatar} onClick={viewUserCard}>

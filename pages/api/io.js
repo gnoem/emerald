@@ -39,7 +39,6 @@ const ioHandler = (_, res) => {
         });
       });
       socket.on('a user spawned', ({ socketId, room }) => { // MAP ONLY
-        console.dir(`a user spawned in ${room}!`);
         const data = {
           ...users[socketId],
           room

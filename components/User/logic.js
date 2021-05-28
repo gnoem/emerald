@@ -1,5 +1,4 @@
 export const handleMovement = (element, { prevPosition, position }, scene) => {
-  console.log('handling movement');
   const actuallyMoved = (() => {
     if (position.spawn) return false;
     return (prevPosition?.x !== position.x) || (prevPosition?.y !== position.y);
@@ -12,7 +11,6 @@ export const handleMovement = (element, { prevPosition, position }, scene) => {
   }
   const { x, y } = position;
   if (actuallyMoved && (prevX === x) && (prevY === y)) return {};
-  console.log(`actually moved: ${actuallyMoved}! position.spawn: ${!!position.spawn} prevPosition: (${prevPosition?.x}, ${prevPosition?.y}); position: (${position?.x}, ${position?.y})`);
   // first need to determine transition duration, THEN start moving
   const transitionDuration = (() => {
     if (!actuallyMoved) return 0;
@@ -27,7 +25,6 @@ export const handleMovement = (element, { prevPosition, position }, scene) => {
     zIndex: `${Math.round(position.y)}`, // should ideally be based on element.getBoundingClientRect() (relative to container)
     transform: `translate3d(${position.x}px, ${position.y}px, 0)`
   }
-  console.log(`setting element style to ${elementProps}`);
   return {
     actuallyMoved,
     elementProps,

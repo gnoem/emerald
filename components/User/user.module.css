@@ -11,7 +11,8 @@
   align-items: center;
   justify-content: center;
   font-size: 0.75rem;
-  transition: linear;
+  transition: linear transform;
+  z-index: -999;
   border: 1px solid black;
 }
 .userAvatar {
