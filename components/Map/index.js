@@ -40,11 +40,21 @@ const Map = ({ children, room, updateMapIsLoaded, loadObjects, updateLoadObjects
   }
   return (
     <div className={styles.Map}>
+      <MapBackground {...{ room }} />
       {loadObjects && mapObjects}
       {loadObjects && mapPortals}
       {children}
     </div>
   );
+}
+
+const MapBackground = ({ room }) => {
+  const backgroundStyle = rooms[room].bg
+    ? { backgroundImage: `url(/assets/map/${rooms[room].bg}.png)` }
+    : { backgroundImage: `url(https://occ-0-1068-92.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABR65SE55Hp1maxFB0Iz-2qFvzkxGdoekXwI8Vye7yZXYoo8WBbhZKqR3IJRHX2WR7nFS6TrVN5OSl1grfJyKW3LihrNA.jpg?r=41b)`, backgroundSize: 'cover' };
+  return (
+    <div className={styles.background} style={backgroundStyle}></div>
+  )
 }
 
 const mapObjectConfig = {

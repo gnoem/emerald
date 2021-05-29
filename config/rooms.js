@@ -1,5 +1,6 @@
 const rooms = {
   plaza: {
+    bg: 'outside',
     objects: ['townhall', 'mossyhouse', 'wishingwell'],
     portals: [{
       to: 'swamp',
@@ -9,6 +10,7 @@ const rooms = {
     }]
   },
   swamp: {
+    bg: 'outside',
     objects: ['witchshack'],
     portals: [{
       to: 'plaza',
