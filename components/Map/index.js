@@ -75,7 +75,7 @@ const mapObjectConfig = {
     coords: [50, 351, 0.2],
     portal: {
       to: 'witchshack',
-      coords: [0.66, 0.18, 0.2, 0.4] // percentage [top, left, width, height] of object
+      coords: [0.66, 0.08, 0.4, 0.4] // percentage [top, left, width, height] of object
     }
   }
 }
@@ -101,7 +101,7 @@ const MapObject = ({ name, objectsRef, updateObjectsRef }) => {
         zIndex: `${zIndex}`
       }} ref={objectRef} onLoad={handleLoad} />
       {rect?.height && <CollisionZone {...{ name, object: objectRef.current, rect }} />}
-      {rect?.height && <ObjectPortal {...{ object: name, rect, portal: mapObjectConfig[name].portal }} />}
+      {rect?.height && <ObjectPortal {...{ name, rect, portal: mapObjectConfig[name].portal }} />}
     </>
   );
 }
@@ -142,9 +142,9 @@ const CollisionZone = ({ name, object, rect }) => {
   );
 }
 
-const ObjectPortal = ({ object, rect, portal }) => {
+const ObjectPortal = ({ name, rect, portal }) => {
   const objectPortal = {
-    object,
+    name,
     rect,
     ...portal
   }
@@ -159,16 +159,14 @@ const MapPortal = ({ portal, isObjectPortal }) => {
   const { setPortalZones } = useContext(MapContext);
   useEffect(() => {
     const element = portalZoneRef.current;
-    if (element) {
-      setPortalZones(prevZones => ({
-        ...prevZones,
-        [portal.to]: element
-      }));
-    }
+    setPortalZones(prevZones => ({
+      ...prevZones,
+      [portal.to]: element // portalZone should be the entire object collision zone
+    }));
   }, [portalZoneRef.current]);
   const getPortalStyle = useCallback(() => {
     if (isObjectPortal) {
-      const objectName = portal.object;
+      const objectName = portal.name;
       const [top, left, width, height] = portal.coords;
       const [objectTop, objectLeft] = mapObjectConfig[objectName].coords;
       const { width: objectWidth, height: objectHeight } = portal.rect;
