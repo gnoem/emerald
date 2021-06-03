@@ -3,7 +3,8 @@ module.exports = {
     // Fixes npm packages that depend on `ws` module
     if (!isServer) {
       config.node = {
-        ws: 'empty'
+        bufferutil: "bufferutil",
+        "utf-8-validate": "utf-8-validate",
       }
     }
 
