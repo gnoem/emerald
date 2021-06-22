@@ -5,7 +5,18 @@ import Avatar from "../Avatar";
 import { handleMovement } from "./logic";
 import styles from "./user.module.css";
 
-const User = React.forwardRef(({ socket, socketId, playerId, scene, room, userInstances, userData, viewUserCard }, ref) => {
+interface IUserProps extends React.HTMLProps<HTMLDivElement> {
+  socket: any;
+  socketId: string;
+  playerId: string;
+  scene: any;
+  room: any;
+  userInstances: any; // array
+  userData: any; // obj
+  viewUserCard: any; // function
+}
+
+const User = React.forwardRef<HTMLDivElement, IUserProps>(({ socket, socketId, playerId, scene, room, userInstances, userData, viewUserCard }, ref) => {
   const isPlayer = playerId === socketId;
   const { position, orientation: givenOrientation = 'S', outfit, message, timestamp } = userData;
   const [elementStyle, setElementStyle] = useState(null);

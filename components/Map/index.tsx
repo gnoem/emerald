@@ -4,7 +4,16 @@ import { MapContext } from "../../contexts";
 import { arraysAreEqual } from "../../utils";
 import styles from "./map.module.css";
 
-const Map = ({ children, room, updateMapIsLoaded, loadObjects, updateLoadObjects, objectsRef, updateObjectsRef }) => {
+interface IMapProps {
+  room: any;
+  updateMapIsLoaded: any;
+  loadObjects: any;
+  updateLoadObjects: any;
+  objectsRef: any;
+  updateObjectsRef: any;
+}
+
+const Map: React.FC<IMapProps> = ({ children, room, updateMapIsLoaded, loadObjects, updateLoadObjects, objectsRef, updateObjectsRef }): JSX.Element => {
   const { objects: objectsList, portals: portalsList } = rooms[room];
   const mapObjects = objectsList.map(obj => {
     return <MapObject {...{
@@ -99,7 +108,7 @@ const MapObject = ({ name, objectsRef, updateObjectsRef }) => {
         top: `${mapObjectConfig[name].coords[0]}px`,
         left: `${mapObjectConfig[name].coords[1]}px`,
         zIndex: `${zIndex}`
-      }} ref={objectRef} onLoad={handleLoad} />
+      } as React.CSSProperties} ref={objectRef} onLoad={handleLoad} />
       {rect?.height && <CollisionZone {...{ name, object: objectRef.current, rect }} />}
       {rect?.height && <ObjectPortal {...{ name, rect, portal: mapObjectConfig[name].portal }} />}
     </>
@@ -107,7 +116,8 @@ const MapObject = ({ name, objectsRef, updateObjectsRef }) => {
 }
 
 const CollisionZone = ({ name, object, rect }) => {
-  const [{ top, left, width, height }, setRect] = useState({});
+  const [clientRect, setRect] = useState<{ [key: string]: number } | undefined>({});
+  const { top, left, width, height } = clientRect;
   const collisionZoneRef = useRef(null);
   const { setCollisionZones } = useContext(MapContext);
   useEffect(() => {
@@ -154,7 +164,24 @@ const ObjectPortal = ({ name, rect, portal }) => {
   );
 }
 
-const MapPortal = ({ portal, isObjectPortal }) => {
+interface IPortal {
+  to: string;
+  coords?: any;
+  name?: string;
+  rect?: ClientRect;
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+  size?: number[];
+}
+
+interface IMapPortalProps {
+  portal: IPortal;
+  isObjectPortal?: boolean;
+}
+
+const MapPortal: React.FC<IMapPortalProps> = ({ portal, isObjectPortal }): JSX.Element => {
   const portalZoneRef = useRef(null);
   const { setPortalZones } = useContext(MapContext);
   useEffect(() => {
@@ -179,7 +206,14 @@ const MapPortal = ({ portal, isObjectPortal }) => {
       return portalStyle;
     } else {
       const { top, bottom, left, right, size } = portal;
-      const portalStyle = {
+      const portalStyle: {
+        top?: string;
+        bottom?: string;
+        left?: string;
+        right?: string;
+        width: string;
+        height: string;
+      } = {
         width: `${size[0]}px`,
         height: `${size[1]}px`,
       }

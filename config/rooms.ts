@@ -1,4 +1,25 @@
-const rooms = {
+interface IRoomPortal {
+  to: string;
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+  size: number[];
+  // why is IPortal from <Map> making me put these in here:
+  coords?: any;
+  name?: string;
+  rect?: any;
+}
+
+interface IRoom {
+  bg?: string;
+  objects: string[];
+  portals: IRoomPortal[];
+}
+
+const rooms: {
+  [key: string]: IRoom
+} = {
   plaza: {
     bg: 'outside',
     objects: ['townhall', 'mossyhouse', 'wishingwell'],

@@ -10,15 +10,15 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "outDir": "./build",
-    "rootDir": "./src",
+    "rootDir": ".",
     "esModuleInterop": true,
     "plugins": [
       {
         "name": "typescript-styled-plugin"
       }
     ],
-    "target": "es2015",
-    "include": [".", "./*", "global", "**/*.ts", "**/*.tsx"],
-    "exclude": ["node_modules/*", "public/*"]
-  }
+    "target": "es2015"
+  },
+  "include": [".", "./*", "global", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules/*", "public/*"]
 }

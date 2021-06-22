@@ -1,3 +1,4 @@
+import React from "react";
 import { randomFromArray } from "../../utils";
 
 export const colorMap = {
@@ -20,7 +21,14 @@ const outfitMap = {
   }
 }
 
-const Avatar = ({ orientation, outfit: rawOutfit = defaultOutfit, socketId, isMoving }) => {
+interface IAvatarProps {
+  orientation: string;
+  outfit: any;
+  socketId: string;
+  isMoving?: boolean;
+}
+
+const Avatar: React.FC<IAvatarProps> = ({ orientation, outfit: rawOutfit = defaultOutfit, socketId, isMoving }): JSX.Element => {
   const color = colorMap[rawOutfit?.color ?? 'blue'];
   const outfit = Object.entries(rawOutfit).map(([category, keyword]) => {
     if (category === 'color') return null;
@@ -40,7 +48,7 @@ const Avatar = ({ orientation, outfit: rawOutfit = defaultOutfit, socketId, isMo
   );
 }
 
-const AvatarS = ({ socketId, color, isMoving, outfit, orientation }) => {
+const AvatarS = ({ socketId, color, isMoving, outfit }) => {
   return (
     <svg viewBox="0 0 73.92 78.77">
       <defs>
@@ -81,7 +89,7 @@ const AvatarS = ({ socketId, color, isMoving, outfit, orientation }) => {
   );
 }
 
-const AvatarSE = ({ socketId, color, isMoving, outfit, orientation }) => {
+const AvatarSE = ({ socketId, color, isMoving, outfit }) => {
   return (
     <svg viewBox="0 0 56.8 78.2">
       <defs>
@@ -126,7 +134,7 @@ const AvatarSE = ({ socketId, color, isMoving, outfit, orientation }) => {
   );
 }
 
-const AvatarSW = ({ socketId, color, isMoving, outfit, orientation }) => {
+const AvatarSW = ({ socketId, color, isMoving, outfit }) => {
   return (
     <svg viewBox="0 0 56.8 78.2">
       <defs>
@@ -171,7 +179,7 @@ const AvatarSW = ({ socketId, color, isMoving, outfit, orientation }) => {
   );
 }
 
-const AvatarE = ({ socketId, color, isMoving, outfit, orientation }) => {
+const AvatarE = ({ socketId, color, outfit }) => {
   return (
     <svg viewBox="0 0 32.52 78.74">
       <defs>
@@ -195,7 +203,7 @@ const AvatarE = ({ socketId, color, isMoving, outfit, orientation }) => {
   );
 }
 
-const AvatarW = ({ socketId, color, isMoving, outfit, orientation }) => {
+const AvatarW = ({ socketId, color, outfit }) => {
   return (
     <svg viewBox="0 0 32.52 78.74">
       <defs>

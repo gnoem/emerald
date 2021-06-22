@@ -1,14 +1,21 @@
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { UsersContext } from "../../contexts/UsersContext";
 import Avatar, { colorMap } from "../Avatar";
 import styles from "./userCard.module.css";
 
-const UserCard = ({ socket, view, updateView, playerId }) => {
-  const [isPlayer, setIsPlayer] = useState(null);
-  const [open, setOpen] = useState(false);
-  const [closing, setClosing] = useState(false);
+interface IUserCardProps {
+  socket: any;
+  view: any;
+  updateView: any;
+  playerId: string;
+}
+
+const UserCard: React.FC<IUserCardProps> = ({ socket, view, updateView, playerId }): JSX.Element => {
+  const [isPlayer, setIsPlayer] = useState<boolean | undefined>(null);
+  const [open, setOpen] = useState<boolean>(false);
+  const [closing, setClosing] = useState<boolean>(false);
   const closeCard = () => {
     setClosing(true);
     updateView(prevView => ({
@@ -40,14 +47,20 @@ const UserCard = ({ socket, view, updateView, playerId }) => {
   );
 }
 
-const CardContent = ({ socket, socketId, isPlayer }) => {
+interface ICardContentProps {
+  socket: any;
+  socketId: string;
+  isPlayer: boolean | undefined;
+}
+
+const CardContent: React.FC<ICardContentProps> = ({ socket, socketId, isPlayer }): JSX.Element => {
   const { userList } = useContext(UsersContext);
   const { outfit } = userList[socketId];
   return (
     <div className={styles.CardContent}>
       <h2>{socketId.slice(0, 5)}</h2>
       <div>
-        <CardAvatar isPlayer={isPlayer}>
+        <CardAvatar>
           <Avatar outfit={outfit} orientation="SE" socketId={`userCard-${socketId}`} />
         </CardAvatar>
         <CardDescription>
@@ -61,7 +74,7 @@ const CardContent = ({ socket, socketId, isPlayer }) => {
   );
 }
 
-const CardAvatar = ({ children, isPlayer }) => {
+const CardAvatar: React.FC = ({ children }): JSX.Element => {
   return (
     <div className={styles.CardAvatar}>
       {children}
@@ -69,7 +82,7 @@ const CardAvatar = ({ children, isPlayer }) => {
   );
 }
 
-const CardDescription = ({ children }) => {
+const CardDescription: React.FC = ({ children }): JSX.Element => {
   return (
     <div className={styles.CardDescription}>
       {children}
@@ -77,7 +90,13 @@ const CardDescription = ({ children }) => {
   );
 }
 
-const Wardrobe = ({ socket, socketId, outfit }) => {
+interface IWardrobeProps {
+  socket: any;
+  socketId: string;
+  outfit: any;
+}
+
+const Wardrobe: React.FC<IWardrobeProps> = ({ socket, socketId, outfit }): JSX.Element => {
   const colorOptions = Object.keys(colorMap).map(color => {
     const handleClick = () => {
       const updatedOutfit = {...outfit};
@@ -100,11 +119,9 @@ const Wardrobe = ({ socket, socketId, outfit }) => {
   );
 }
 
-const UserDescription = () => {
+const UserDescription: React.FC = (): JSX.Element => {
   return (
-    <div>
-
-    </div>
+    <div></div>
   );
 }
 

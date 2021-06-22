@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useRef } from "react";
 import { MapContext, MapContextProvider } from "../../contexts";
 import Chat from "../Chat";
 import Map from "../Map";
@@ -8,7 +9,17 @@ import { getSpawnPosition, moveUser } from "./logic";
 
 import styles from "./scene.module.css";
 
-const Scene = React.forwardRef(({ children, room, socket, userList, userInstances, playerId, view, updateView }, ref) => {
+interface ISceneProps extends React.HTMLProps<HTMLDivElement> {
+  room: any;
+  socket: any;
+  userList: any;
+  userInstances: any;
+  playerId: string;
+  view: string;
+  updateView: any;
+}
+
+const Scene = React.forwardRef<HTMLDivElement, ISceneProps>(({ children, room, socket, userList, userInstances, playerId, view, updateView }, ref) => {
   const [mapIsLoaded, setMapIsLoaded] = useState(false);
   const [loadingScreen, setLoadingScreen] = useState(true);
   useEffect(() => {
@@ -35,7 +46,29 @@ const Scene = React.forwardRef(({ children, room, socket, userList, userInstance
   );
 });
 
-const Canvas = React.forwardRef(({ children, socket, room, view, userList, userInstances, playerId, mapIsLoaded, updateMapIsLoaded }, ref) => {
+interface ICanvasProps extends React.HTMLProps<HTMLDivElement> {
+  room: any;
+  socket: any;
+  view: any;
+  userList: any;
+  userInstances: any;
+  playerId: string;
+  mapIsLoaded: boolean;
+  updateMapIsLoaded: any;
+}
+
+const Canvas = React.forwardRef<HTMLDivElement, ICanvasProps>(({
+  children, room, socket, view, userList, userInstances, playerId, mapIsLoaded, updateMapIsLoaded
+}, ref) => {
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const createCanvasRef = (node) => {
+    canvasRef.current = node;
+    if (typeof ref === 'function') {
+      ref(node);
+    } else if (ref) {
+      (ref as React.MutableRefObject<HTMLDivElement>).current = node;
+    }
+  }
   const { portalZones, setPortalZones, collisionZones, setCollisionZones } = useContext(MapContext);
   const [objectsRef, setObjectsRef] = useState({});
   const [loadObjects, setLoadObjects] = useState(false);
@@ -55,7 +88,7 @@ const Canvas = React.forwardRef(({ children, socket, room, view, userList, userI
   useEffect(() => {
     const { position } = userList[playerId];
     if (mapIsLoaded) {
-      const randomPosition = getSpawnPosition(ref.current, objectsRef);
+      const randomPosition = getSpawnPosition(canvasRef.current, objectsRef);
       socket.emit('a user moved', {
         socketId: playerId,
         position: position?.portal?.spawnLocation ?? randomPosition,
@@ -65,13 +98,13 @@ const Canvas = React.forwardRef(({ children, socket, room, view, userList, userI
     }
   }, [playerId, mapIsLoaded, objectsRef]);
   useEffect(() => {
-    if (!ref.current || !userInstances[playerId] || !socket) return;
+    if (!canvasRef.current || !userInstances[playerId] || !socket) return;
     const handleClick = (e) => moveUser(e, { socket, playerId, room, view, userInstances, ref, collisionZones, portalZones });
-    ref.current.addEventListener('click', handleClick);
-    return () => ref.current?.removeEventListener('click', handleClick);
-  }, [socket, view, room, userList, playerId, collisionZones, ref.current]);
+    canvasRef.current.addEventListener('click', handleClick);
+    return () => canvasRef.current?.removeEventListener('click', handleClick);
+  }, [socket, view, room, userList, playerId, collisionZones, canvasRef.current]);
   return (
-    <div className={`${styles.Canvas} ${(view.user && !view.selfDestruct) ? styles.dim : ''}`} ref={ref}>
+    <div className={`${styles.Canvas} ${(view.user && !view.selfDestruct) ? styles.dim : ''}`} ref={createCanvasRef}>
       <Map {...{
         room,
         updateMapIsLoaded,

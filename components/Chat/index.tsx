@@ -1,10 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./chat.module.css";
 
-const Chat = ({ socket, playerId }) => {
-  const [message, setMessage] = useState('');
-  const inputRef = useRef(null);
-  const buttonRef = useRef(null);
+interface IChatProps {
+  socket: any;
+  playerId: string;
+}
+
+const Chat: React.FC<IChatProps> = ({ socket, playerId }): JSX.Element => {
+  const [message, setMessage] = useState<string>('');
+  const inputRef = useRef<HTMLInputElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const writeMessage = (e) => setMessage(e.target.value);
   const submitMessage = () => {
     setMessage('');
