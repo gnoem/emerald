@@ -1,7 +1,7 @@
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useContext, useEffect, useState } from "react";
-import { UsersContext } from "../../contexts/UsersContext";
+import { UsersContext } from "@contexts/UsersContext";
 import Avatar, { colorMap } from "../Avatar";
 import styles from "./userCard.module.css";
 

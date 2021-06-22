@@ -1,5 +1,5 @@
-import { rooms } from "../../config";
-import { clickedInside, getDistanceBetween, getOrientation, randomIntBetween } from "../../utils";
+import { rooms } from "@config";
+import { clickedInside, getDistanceBetween, getOrientation, randomIntBetween } from "@utils";
 
 export const moveUser = (e, { socket, playerId, room, view, userInstances, ref, collisionZones, portalZones }) => {
   if (Object.entries(view).length) return;

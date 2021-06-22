@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useRef } from "react";
-import { MapContext, MapContextProvider } from "../../contexts";
+import { MapContext, MapContextProvider } from "@contexts";
 import Chat from "../Chat";
 import Map from "../Map";
 import Title from "../Title";

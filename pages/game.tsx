@@ -1,9 +1,9 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import Scene from "../components/Scene";
-import User from "../components/User";
-import { PlayerContext, UsersContext } from "../contexts";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import Scene from "@components/Scene";
+import User from "@components/User";
+import { PlayerContext, UsersContext } from "@contexts";
 
-const Game = () => {
+const Game: React.FC = (): JSX.Element => {
   const [view, setView] = useState({});
   const [usersInRoom, setUsersInRoom] = useState([]);
   const { userList, userInstances } = useContext(UsersContext);

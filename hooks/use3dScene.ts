@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import * as THREE from "three";
 
-export const use3dScene = (sceneRef) => {
+const use3dScene = (sceneRef) => {
   useEffect(() => {
     if (!sceneRef) return;
     const createScene = () => {
@@ -31,7 +31,7 @@ export const use3dScene = (sceneRef) => {
         camera
       }
     }
-    const renderPlayer = ({ scene, camera }) => {
+    const renderPlayer = ({ scene }) => {
       const { GLTFLoader } = require("three/examples/jsm/loaders/GLTFLoader");
       const loader = new GLTFLoader();
       let waddle;
@@ -45,3 +45,5 @@ export const use3dScene = (sceneRef) => {
   }, [sceneRef]);
   return;
 }
+
+export default use3dScene;

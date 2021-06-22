@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 
-export const UsersContext = React.createContext();
+export const UsersContext = React.createContext(null);
 
-const UsersContextProvider = ({ children }) => {
+const UsersContextProvider: React.FC = ({ children }): JSX.Element => {
   const [userList, setUserList] = useState({});
   const userInstances = useRef({});
   const contextValue = {

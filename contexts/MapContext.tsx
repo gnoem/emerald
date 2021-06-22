@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 
-export const MapContext = React.createContext();
+export const MapContext = React.createContext(null);
 
-const MapContextProvider = ({ children }) => {
+const MapContextProvider: React.FC = ({ children }): JSX.Element => {
   const [collisionZones, setCollisionZones] = useState({});
   const [portalZones, setPortalZones] = useState({});
   const contextValue = {

@@ -2,12 +2,11 @@ import React, { useContext, useEffect, useState } from "react";
 import io from "socket.io-client";
 import { UsersContext } from ".";
 
-export const PlayerContext = React.createContext();
+export const PlayerContext = React.createContext(null);
 
-const PlayerContextProvider = ({ children }) => {
+const PlayerContextProvider: React.FC = ({ children }): JSX.Element => {
   const [socket, setSocket] = useState(null);
   const [playerId, setPlayerId] = useState(null);
-  const [displayName, setDisplayName] = useState(null);
   const { setUserList } = useContext(UsersContext);
   useEffect(() => {
     if (socket) return; // prevent new connection on hot reload
@@ -33,7 +32,7 @@ const PlayerContextProvider = ({ children }) => {
       socket.on('a user switched rooms', handleUserUpdate);
       socket.on('a user talked', handleUserUpdate);
       socket.on('a user changed their outfit', handleUserUpdate);
-      socket.on('user-disconnected', ({ socketId, users }) => {
+      socket.on('user-disconnected', ({ users }) => {
         setUserList(users);
         // todo figure out how to remove element from userInstances
         // something like clearUserInstance(socketId);

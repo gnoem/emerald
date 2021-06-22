@@ -1,5 +1,5 @@
 import React from "react";
-import { randomFromArray } from "../../utils";
+import { randomFromArray } from "@utils";
 
 export const colorMap = {
   blue: ['#005b97', '#0075be', '#1e9cd7', '#cce0f4'],

@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { rooms } from "../../config";
-import { MapContext } from "../../contexts";
-import { arraysAreEqual } from "../../utils";
+import { rooms } from "@config";
+import { MapContext } from "@contexts";
+import { arraysAreEqual } from "@utils";
 import styles from "./map.module.css";
 
 interface IMapProps {

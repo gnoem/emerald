@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { usePrevious } from "../../hooks";
-import { getOrientation } from "../../utils";
+import { usePrevious } from "@hooks";
+import { getOrientation } from "@utils";
 import Avatar from "../Avatar";
 import { handleMovement } from "./logic";
 import styles from "./user.module.css";
