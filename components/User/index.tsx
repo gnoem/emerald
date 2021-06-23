@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { usePrevious } from "@hooks";
 import { getOrientation } from "@utils";
-import Avatar from "../Avatar";
+import { Avatar } from "@components";
 import { handleMovement } from "./logic";
 import styles from "./user.module.css";
 

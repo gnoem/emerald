@@ -1,12 +1,15 @@
+import React from "react";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 // Prevent fontawesome from adding its CSS since we did it manually above:
 import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoAddCss = false; /* eslint-disable import/first */
 
-import "../styles/globals.css";
-import AppContextProvider from "../contexts";
+import type { AppProps } from "next/app";
 
-function MyApp({ Component, pageProps }) {
+import "@styles/globals.css";
+import AppContextProvider from "@contexts";
+
+const MyApp = ({ Component, pageProps }: AppProps): JSX.Element => {
   return (
     <AppContextProvider>
       <Component {...pageProps} />
@@ -14,4 +17,4 @@ function MyApp({ Component, pageProps }) {
   );
 }
 
-export default MyApp
+export default MyApp;

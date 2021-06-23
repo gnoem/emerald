@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import Scene from "@components/Scene";
-import User from "@components/User";
+import { Scene, User } from "@components";
 import { PlayerContext, UsersContext } from "@contexts";
 
 const Game: React.FC = (): JSX.Element => {

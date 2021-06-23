@@ -1,10 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useRef } from "react";
 import { MapContext, MapContextProvider } from "@contexts";
-import Chat from "../Chat";
-import Map from "../Map";
-import Title from "../Title";
-import UserCard from "../UserCard";
+import { Chat, Map, Title, UserCard } from "@components";
 import { getSpawnPosition, moveUser } from "./logic";
 
 import styles from "./scene.module.css";
