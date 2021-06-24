@@ -1,14 +1,14 @@
-export const randomIntBetween = (min, max) => {
+export const randomIntBetween = (min: number, max: number): number => {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
-export const getDistanceBetween = (cx, cy, ex, ey) => {
+export const getDistanceBetween = (cx: number, cy: number, ex: number, ey: number): number => {
   const dy = ey - cy;
   const dx = ex - cx;
   return Math.hypot(dx, dy);
 }
 
-export const getAngle = (cx, cy, ex, ey) => {
+export const getAngle = (cx: number, cy: number, ex: number, ey: number): number => {
   const dy = ey - cy;
   const dx = ex - cx;
   let theta = Math.atan2(dy, dx);
@@ -17,7 +17,7 @@ export const getAngle = (cx, cy, ex, ey) => {
   return theta;
 }
 
-export const getOrientation = (prevX, prevY, x, y) => {
+export const getOrientation = (prevX: number, prevY: number, x: number, y: number): string => {
   const angle = getAngle(prevX, prevY, x, y);
   const angleIsBetween = (min, max) => (angle > min) && (angle <= max);
   if ((angle < 10) || (angle > 350)) return 'E';
@@ -30,11 +30,11 @@ export const getOrientation = (prevX, prevY, x, y) => {
   if (angleIsBetween(280, 350)) return 'NE';
 }
 
-export const randomFromArray = (array) => {
+export const randomFromArray = (array: any[]): any => {
   return array[Math.floor(Math.random() * array.length)];
 }
 
-export const arraysAreEqual = (array1, array2) => {
+export const arraysAreEqual = (array1: any[], array2: any[]): boolean => {
   if (!array1 || !array2) return false;
   if (array1.length !== array2.length) return false;
   for (let i = 0; i < array1.length; i++) {
@@ -45,7 +45,7 @@ export const arraysAreEqual = (array1, array2) => {
   return true;
 }
 
-export const clickedInside = (e, arrayOfClassNames) => {
+export const clickedInside = (e, arrayOfClassNames: string[]): boolean => {
   for (let i = 0; i < arrayOfClassNames.length; i++) {
     const className = arrayOfClassNames[i];
     if (e.target.closest(`[class*=${className}] *`)) {
