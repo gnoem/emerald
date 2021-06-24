@@ -6,7 +6,7 @@ export const PlayerContext = React.createContext(null);
 
 const PlayerContextProvider: React.FC = ({ children }): JSX.Element => {
   const [socket, setSocket] = useState(null);
-  const [playerId, setPlayerId] = useState(null);
+  const [playerId, setPlayerId] = useState<string | undefined>(null);
   const { setUserList } = useContext(UsersContext);
   useEffect(() => {
     if (socket) return; // prevent new connection on hot reload

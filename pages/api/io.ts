@@ -1,11 +1,11 @@
 import { Server } from "socket.io";
-import { colorMap } from "../../components/Avatar";
-import { rooms } from "../../config";
-import { randomFromArray } from "../../utils";
+import { colorMap } from "@components/Avatar";
+import { rooms } from "@config";
+import { randomFromArray } from "@utils";
 
 const users = {};
 
-const ioHandler = (_, res) => {
+const ioHandler = (_, res): void => {
   if (!res.socket.server.io) {
     console.log('Starting socket.io');
     const io = new Server(res.socket.server);

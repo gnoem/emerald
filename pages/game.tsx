@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Scene, User } from "@components";
 import { PlayerContext, UsersContext } from "@contexts";
+import { IView } from "@types";
 
 const Game: React.FC = (): JSX.Element => {
-  const [view, setView] = useState({});
-  const [usersInRoom, setUsersInRoom] = useState([]);
+  const [view, setView] = useState<IView>({});
+  const [usersInRoom, setUsersInRoom] = useState<JSX.Element[]>([]);
   const { userList, userInstances } = useContext(UsersContext);
   const { socket, playerId } = useContext(PlayerContext);
   const sceneRef = useRef(null);
@@ -37,7 +38,15 @@ const Game: React.FC = (): JSX.Element => {
   if (!playerId) return null;
   if (!Object.keys(userList).length) return null;
   return (
-    <Scene ref={sceneRef} {...{ room: userList[playerId].room, socket, userList, userInstances, view, updateView: setView, playerId }}>
+    <Scene ref={sceneRef} {...{
+      room: userList[playerId].room,
+      socket,
+      userList,
+      userInstances,
+      view,
+      updateView: setView,
+      playerId
+    }}>
       {usersInRoom}
     </Scene>
   );

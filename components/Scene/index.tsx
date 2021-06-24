@@ -5,20 +5,21 @@ import { Chat, Map, Title, UserCard } from "@components";
 import { getSpawnPosition, moveUser } from "./logic";
 
 import styles from "./scene.module.css";
+import { IUser, IView } from "@types";
 
 interface ISceneProps extends React.HTMLProps<HTMLDivElement> {
-  room: any;
+  room: string;
   socket: any;
-  userList: any;
-  userInstances: any;
+  userList: { [socketId: string]: IUser };
+  userInstances: { [socketId: string]: HTMLElement };
   playerId: string;
-  view: string;
-  updateView: any;
+  view: IView;
+  updateView: (value: IView) => void;
 }
 
 const Scene = React.forwardRef<HTMLDivElement, ISceneProps>(({ children, room, socket, userList, userInstances, playerId, view, updateView }, ref) => {
-  const [mapIsLoaded, setMapIsLoaded] = useState(false);
-  const [loadingScreen, setLoadingScreen] = useState(true);
+  const [mapIsLoaded, setMapIsLoaded] = useState<boolean>(false);
+  const [loadingScreen, setLoadingScreen] = useState<boolean>(true);
   useEffect(() => {
     if (mapIsLoaded) {
       setTimeout(() => {
@@ -44,14 +45,14 @@ const Scene = React.forwardRef<HTMLDivElement, ISceneProps>(({ children, room, s
 });
 
 interface ICanvasProps extends React.HTMLProps<HTMLDivElement> {
-  room: any;
+  room: string;
   socket: any;
-  view: any;
-  userList: any;
-  userInstances: any;
+  view: IView;
+  userList: { [socketId: string]: IUser };
+  userInstances: { [socketId: string]: HTMLElement };
   playerId: string;
   mapIsLoaded: boolean;
-  updateMapIsLoaded: any;
+  updateMapIsLoaded: (value: boolean) => void;
 }
 
 const Canvas = React.forwardRef<HTMLDivElement, ICanvasProps>(({
@@ -67,8 +68,8 @@ const Canvas = React.forwardRef<HTMLDivElement, ICanvasProps>(({
     }
   }
   const { portalZones, setPortalZones, collisionZones, setCollisionZones } = useContext(MapContext);
-  const [objectsRef, setObjectsRef] = useState({});
-  const [loadObjects, setLoadObjects] = useState(false);
+  const [objectsRef, setObjectsRef] = useState<{ [key: string]: HTMLElement }>({});
+  const [loadObjects, setLoadObjects] = useState<boolean>(false);
   const updateObjectsRef = (name, element) => {
     setObjectsRef(prevObjects => ({
       ...prevObjects,
@@ -115,7 +116,7 @@ const Canvas = React.forwardRef<HTMLDivElement, ICanvasProps>(({
   );
 });
 
-const MapLoading = () => {
+const MapLoading: React.FC = (): JSX.Element => {
   return (
     <div className={styles.MapLoading}>
       loading...

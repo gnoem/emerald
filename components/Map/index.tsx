@@ -5,12 +5,12 @@ import { arraysAreEqual } from "@utils";
 import styles from "./map.module.css";
 
 interface IMapProps {
-  room: any;
-  updateMapIsLoaded: any;
-  loadObjects: any;
-  updateLoadObjects: any;
-  objectsRef: any;
-  updateObjectsRef: any;
+  room: string;
+  updateMapIsLoaded: (value: boolean) => void;
+  loadObjects: boolean;
+  updateLoadObjects: (value: boolean) => void;
+  objectsRef: { [key: string]: HTMLElement };
+  updateObjectsRef: (objectName, objectElement) => void;
 }
 
 const Map: React.FC<IMapProps> = ({ children, room, updateMapIsLoaded, loadObjects, updateLoadObjects, objectsRef, updateObjectsRef }): JSX.Element => {
@@ -90,8 +90,8 @@ const mapObjectConfig = {
 }
 
 const MapObject = ({ name, objectsRef, updateObjectsRef }) => {
-  const [rect, setRect] = useState(null);
-  const [zIndex, setZIndex] = useState(-1);
+  const [rect, setRect] = useState<ClientRect | undefined>(null);
+  const [zIndex, setZIndex] = useState<number>(-1);
   const objectRef = useRef(null);
   const handleLoad = () => {
     setRect(objectRef.current?.getBoundingClientRect());

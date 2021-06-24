@@ -4,10 +4,11 @@ import React, { useContext, useEffect, useState } from "react";
 import { UsersContext } from "@contexts/UsersContext";
 import Avatar, { colorMap } from "@components/Avatar";
 import styles from "./userCard.module.css";
+import { IView } from "@types";
 
 interface IUserCardProps {
   socket: any;
-  view: any;
+  view: IView;
   updateView: any;
   playerId: string;
 }

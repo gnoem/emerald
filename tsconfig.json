@@ -3,8 +3,14 @@
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
-    "jsx": "react",
-    "lib": ["dom", "esnext", "es2015", "es2016", "es2017"],
+    "jsx": "preserve",
+    "lib": [
+      "dom",
+      "esnext",
+      "es2015",
+      "es2016",
+      "es2017"
+    ],
     "moduleResolution": "node",
     "noImplicitAny": false,
     "noUnusedLocals": true,
@@ -19,25 +25,66 @@
     ],
     "target": "es2015",
     "paths": {
-      "@components": ["components"],
-      "@components/*": ["components/*"],
-
-      "@config": ["config"],
-      "@config/*": ["config/*"],
-
-      "@contexts": ["contexts"],
-      "@contexts/*": ["contexts/*"],
-      
-      "@hooks": ["hooks"],
-      "@hooks/*": ["hooks/*"],
-      
-      "@styles": ["styles"],
-      "@styles/*": ["styles/*"],
-      
-      "@utils": ["utils"],
-      "@utils/*": ["utils/*"],
-    }
+      "@components": [
+        "components"
+      ],
+      "@components/*": [
+        "components/*"
+      ],
+      "@config": [
+        "config"
+      ],
+      "@config/*": [
+        "config/*"
+      ],
+      "@contexts": [
+        "contexts"
+      ],
+      "@contexts/*": [
+        "contexts/*"
+      ],
+      "@hooks": [
+        "hooks"
+      ],
+      "@hooks/*": [
+        "hooks/*"
+      ],
+      "@styles": [
+        "styles"
+      ],
+      "@styles/*": [
+        "styles/*"
+      ],
+      "@types": [
+        "types"
+      ],
+      "@types/*": [
+        "types/*"
+      ],
+      "@utils": [
+        "utils"
+      ],
+      "@utils/*": [
+        "utils/*"
+      ]
+    },
+    "skipLibCheck": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "module": "esnext",
+    "resolveJsonModule": true,
+    "isolatedModules": true
   },
-  "include": [".", "./*", "global", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules/*", "public/*"]
+  "include": [
+    ".",
+    "./*",
+    "global",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules/*",
+    "public/*"
+  ]
 }

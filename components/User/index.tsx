@@ -4,26 +4,27 @@ import { getOrientation } from "@utils";
 import { Avatar } from "@components";
 import { handleMovement } from "./logic";
 import styles from "./user.module.css";
+import { IUser } from "@types";
 
 interface IUserProps extends React.HTMLProps<HTMLDivElement> {
   socket: any;
   socketId: string;
   playerId: string;
-  scene: any;
-  room: any;
-  userInstances: any; // array
-  userData: any; // obj
-  viewUserCard: any; // function
+  scene: HTMLElement | undefined;
+  room: string;
+  userInstances: { [socketId: string]: HTMLElement };
+  userData: IUser;
+  viewUserCard: () => void;
 }
 
 const User = React.forwardRef<HTMLDivElement, IUserProps>(({ socket, socketId, playerId, scene, room, userInstances, userData, viewUserCard }, ref) => {
   const isPlayer = playerId === socketId;
   const { position, orientation: givenOrientation = 'S', outfit, message, timestamp } = userData;
   const [elementStyle, setElementStyle] = useState(null);
-  const [orientation, setOrientation] = useState(null);
-  const [isMoving, setIsMoving] = useState(false);
-  const [movementTimeout, setMovementTimeout] = useState(null);
-  const [portalTimeout, setPortalTimeout] = useState(null);
+  const [orientation, setOrientation] = useState<string | undefined>(null);
+  const [isMoving, setIsMoving] = useState<boolean>(false);
+  const [movementTimeout, setMovementTimeout] = useState<ReturnType<typeof setTimeout> | undefined>(null);
+  const [portalTimeout, setPortalTimeout] = useState<ReturnType<typeof setTimeout> | undefined>(null);
   const prevPosition = usePrevious(position);
   const element = userInstances[socketId];
   useEffect(() => setOrientation(givenOrientation), [givenOrientation]);
