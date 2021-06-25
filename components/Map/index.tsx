@@ -9,7 +9,7 @@ interface IMapProps {
   updateMapIsLoaded: (value: boolean) => void;
   loadObjects: boolean;
   updateLoadObjects: (value: boolean) => void;
-  objectsRef: { [key: string]: HTMLElement };
+  objectsRef: { [objectName: string]: HTMLElement };
   updateObjectsRef: (objectName, objectElement) => void;
 }
 
@@ -116,7 +116,7 @@ const MapObject = ({ name, objectsRef, updateObjectsRef }) => {
 }
 
 const CollisionZone = ({ name, object, rect }) => {
-  const [clientRect, setRect] = useState<{ [key: string]: number } | undefined>({});
+  const [clientRect, setRect] = useState<{ [property: string]: number } | undefined>({});
   const { top, left, width, height } = clientRect;
   const collisionZoneRef = useRef(null);
   const { setCollisionZones } = useContext(MapContext);

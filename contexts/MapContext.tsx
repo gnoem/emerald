@@ -3,7 +3,7 @@ import React, { useState } from "react";
 export const MapContext = React.createContext(null);
 
 interface IMapZone {
-  [key: string]: HTMLElement
+  [zoneName: string]: HTMLElement
 }
 
 const MapContextProvider: React.FC = ({ children }): JSX.Element => {

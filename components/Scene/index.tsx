@@ -68,7 +68,7 @@ const Canvas = React.forwardRef<HTMLDivElement, ICanvasProps>(({
     }
   }
   const { portalZones, setPortalZones, collisionZones, setCollisionZones } = useContext(MapContext);
-  const [objectsRef, setObjectsRef] = useState<{ [key: string]: HTMLElement }>({});
+  const [objectsRef, setObjectsRef] = useState<{ [objectName: string]: HTMLElement }>({});
   const [loadObjects, setLoadObjects] = useState<boolean>(false);
   const updateObjectsRef = (name, element) => {
     setObjectsRef(prevObjects => ({

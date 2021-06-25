@@ -18,7 +18,7 @@ interface IRoom {
 }
 
 const rooms: {
-  [key: string]: IRoom
+  [roomName: string]: IRoom
 } = {
   plaza: {
     bg: 'outside',

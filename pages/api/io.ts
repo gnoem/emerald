@@ -27,37 +27,17 @@ const ioHandler = (_, res): void => {
         });
       });
       socket.broadcast.emit('a user connected', users);
-      socket.on('a user moved', ({ socketId, position, orientation }) => {
-        const data = {
+      const handleData = (event: string) => ({ socketId, ...data }): void => {
+        const dataPackage = {
           ...users[socketId],
-          position,
-          orientation
+          ...data
         }
-        users[socketId] = data;
-        io.sockets.emit('a user moved', {
-          [socketId]: data
-        });
-      });
-      socket.on('a user spawned', ({ socketId, room }) => { // MAP ONLY
-        const data = {
-          ...users[socketId],
-          room
-        }
-        users[socketId] = data;
-        io.sockets.emit('a user spawned', {
-          [socketId]: data
-        });
-      });
-      socket.on('a user switched rooms', ({ socketId, room }) => {
-        const data = {
-          ...users[socketId],
-          room
-        }
-        users[socketId] = data;
-        io.sockets.emit('a user switched rooms', {
-          [socketId]: data
-        });
-      });
+        users[socketId] = dataPackage;
+        io.sockets.emit(event, { [socketId]: dataPackage });
+      }
+      socket.on('a user moved', handleData('a user moved'));
+      socket.on('a user spawned', handleData('a user spawned'));
+      socket.on('a user switched rooms', handleData('a user switched rooms'));
       let messageTimer;
       socket.on('a user talked', ({ socketId, message, timestamp }) => {
         clearTimeout(messageTimer);
@@ -67,9 +47,7 @@ const ioHandler = (_, res): void => {
           timestamp
         }
         users[socketId] = data;
-        io.sockets.emit('a user talked', {
-          [socketId]: data
-        });
+        io.sockets.emit('a user talked', { [socketId]: data });
         messageTimer = setTimeout(() => {
           const upToDateData = {...users[socketId]};
           delete upToDateData.message;
@@ -83,16 +61,7 @@ const ioHandler = (_, res): void => {
           });
         }, 5000);
       });
-      socket.on('a user changed their outfit', ({ socketId, outfit }) => {
-        const data = {
-          ...users[socketId],
-          outfit
-        }
-        users[socketId] = data;
-        io.sockets.emit('a user talked', {
-          [socketId]: data
-        });
-      });
+      socket.on('a user changed their outfit', handleData('a user changed their outfit'));
       socket.on('disconnect', () => {
         delete users[socket.id];
         socket.broadcast.emit('user-disconnected', {
